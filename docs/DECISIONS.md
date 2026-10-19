@@ -84,3 +84,12 @@ Deviations from, or interpretations of, the spec. Newest at the bottom of each s
 - **Press and hold ⋯ to move the bar** (owner request): holding the ⋯ button for 350 ms, or starting
   to drag it, picks the bar up and it follows the pointer; a quick click still opens the menu. The
   onboarding tip and the button tooltip say so in all three languages.
+
+## Packaging & release
+- The release job packages the unpacked app first, runs the Playwright suite against the real
+  `Furniture Finder.exe` (`FF_APP_EXE`), and only then builds the NSIS installer from that same
+  folder (`--prepackaged`) and publishes it. A failing smoke test never publishes a release.
+- chokidar / electron-store / zod are devDependencies because they are bundled into the main
+  bundle; only better-sqlite3, electron-log, electron-updater and xlsx ship in `node_modules`.
+  Windows builds keep only better-sqlite3's `win32-x64` prebuilt binary and en/he/ar Chromium locales.
+- macOS builds (`npm run dist:mac`, dev only) are unsigned (`identity: null`).

@@ -1,0 +1,59 @@
+appId: com.furniturefinder.app
+productName: Furniture Finder
+copyright: Copyright © 2026 Furniture Finder
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**
+  - resources/**
+  - package.json
+  - '!**/*.map'
+  - '!**/node_modules/better-sqlite3/{deps,src,docs}/**'
+  - '!**/node_modules/*/{README.md,CHANGELOG.md,*.d.ts}'
+electronLanguages: [en-US, he, ar]
+asarUnpack:
+  - '**/node_modules/better-sqlite3/**'
+  - resources/**
+npmRebuild: true
+win:
+  files:
+    # better-sqlite3 ships prebuilt binaries for every platform; Windows x64 needs only its own.
+    - '!**/node_modules/better-sqlite3/prebuilds/{linux*,darwin*,win32-arm64*,win32-ia32*}'
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icon.ico
+  artifactName: Furniture-Finder-Setup-${version}.${ext}
+  # Code signing (later): uncomment and configure Azure Trusted Signing or a certificate.
+  # azureSignOptions:
+  #   publisherName: "Your Company"
+  #   endpoint: https://weu.codesigning.azure.net
+  #   certificateProfileName: furniture-finder
+  #   codeSigningAccountName: furniture-finder
+  # signtoolOptions:
+  #   certificateSubjectName: "Your Company"
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Furniture Finder
+  installerLanguages: [en_US, he_IL, ar_SA]
+  multiLanguageInstaller: true
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+mac:
+  target: dir
+  icon: build/icon.png
+  category: public.app-category.productivity
+  identity: null
+publish:
+  provider: github
+  owner: saad-aghbar
+  repo: furniture-finder
+  releaseType: release

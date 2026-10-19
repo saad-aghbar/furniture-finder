@@ -36,10 +36,10 @@
 
 ## Phase 4 — Packaging & release
 - [x] App icon (SVG → ico/png)
-- [ ] electron-builder config, release workflow on windows-latest
-- [ ] Auto-updater + update pill
-- [ ] README in 3 languages; screenshots/GIF
-- [ ] Playwright e2e: onboarding → index fixtures → search he/ar/en → scope → copy → move bar
+- [x] electron-builder config, release workflow on windows-latest
+- [x] Auto-updater + update pill
+- [x] README in 3 languages; screenshots/GIF
+- [x] Playwright e2e: onboarding → index fixtures → search he/ar/en → scope → copy → move bar
 
 ## Phase 5 — Polish & verify
 - [ ] Go through ACCEPTANCE.md, fix everything

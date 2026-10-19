@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install (compiles better-sqlite3 for Electron on Windows)
+        run: npm ci
+      - name: Lint & typecheck
+        run: npm run lint
+      - name: Unit tests
+        run: npm run test
+      - name: Build
+        run: npm run build
+      - name: Package the app (unpacked)
+        run: npx electron-builder --win dir --x64 --publish never
+      - name: Smoke test the packaged app (Playwright e2e)
+        env:
+          FF_APP_EXE: ${{ github.workspace }}\release\win-unpacked\Furniture Finder.exe
+          CI: '1'
+        run: npx playwright test
+      - name: Build the installer and publish it to the GitHub Release
+        run: npx electron-builder --win nsis --x64 --prepackaged release/win-unpacked --publish always
+      - name: Upload e2e report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 14

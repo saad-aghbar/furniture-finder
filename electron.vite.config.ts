@@ -2,7 +2,7 @@ import { resolve } from 'node:path'
 import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
-// ESM-only packages are bundled into the CJS main bundle instead of being required at runtime.
+// Bundled into the main bundle (ESM-only packages); they are devDependencies, so not shipped twice.
 const bundled = ['chokidar', 'electron-store', 'zod']
 
 export default defineConfig({

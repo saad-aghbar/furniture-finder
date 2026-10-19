@@ -117,7 +117,7 @@ describe('name column', () => {
 describe('scanSource', () => {
   it('scans folders recursively and counts skipped files', async () => {
     const res = await scanSource(DIR, 'folder')
-    const names = res.files.map((x) => x.path.slice(DIR.length + 1))
+    const names = res.files.map((x) => x.path.slice(DIR.length + 1).replace(/\\/g, '/'))
     expect(names).toContain('suppliers/mixed/Mixed.xlsm')
     expect(names).not.toContain('~$קטלוג רהיטים.xlsx')
     expect(res.skipped).toBe(2) // notes.txt + logo.png
