@@ -39,3 +39,29 @@ Deviations from, or interpretations of, the spec. Newest at the bottom of each s
   everything else is "damaged or not a real Excel file".
 - CSV encoding: UTF-8/UTF-16 first, otherwise whichever of Windows-1255 / Windows-1256 yields more
   Hebrew / Arabic letters.
+
+## Main process & windows
+- **The bar's native window is always "bar + results room"** (bar height + 8 px + up to 60 % of the
+  screen). Transparent parts ignore the mouse (`setIgnoreMouseEvents(true,{forward:true})`), so the
+  window never needs resizing while results animate – no clipping, no flicker. It is resized only
+  when the bar is moved, its width is changed or the text size changes.
+- **Results open upwards** when the bar is in the lower half of the screen (e.g. snapped to
+  bottom-centre), otherwise downwards.
+- **Windows acrylic material is not used**: it would blur the whole (mostly transparent) window
+  rectangle. The glass look is CSS only, with a slightly more opaque background for readability.
+- `type: 'toolbar'` on Windows (WS_EX_TOOLWINDOW) keeps the bar out of Alt-Tab and the taskbar;
+  `type: 'panel'` on macOS lets it float over full-screen apps during development.
+- Dragging, resizing and the snap "magnet" spring run in the main process from the cursor position
+  (60 fps timer), so the bar follows the pointer 1:1 even across monitors. Snap ghost pills are drawn
+  by a separate click-through overlay window.
+- **Indexing runs in a `worker_threads` worker** that owns the only write connection; search runs on
+  a read-only connection in main (WAL). Watch events are debounced (0.8 s, plus chokidar's
+  write-finish wait of 1.2 s) → updates land within ~3 s.
+- A vanished source *root* is treated as "offline" (unplugged drive), never as a deletion.
+- "Open in Excel" only accepts files that are in the index, then uses Windows PowerShell 5.1 + COM
+  (paths passed via environment variables, never interpolated into the script), falling back to
+  `shell.openPath`.
+- Electron 44's clipboard API is the async W3C style: one `ClipboardItem` carries `text/plain`
+  ("Header: value" lines) and `text/html` (a one-row table Excel pastes as cells). A separate TSV
+  flavour is not needed because Excel prefers the HTML table.
+- Numbers in UI messages use Western digits in all three languages (the data uses them too).

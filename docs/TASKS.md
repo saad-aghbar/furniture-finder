@@ -19,10 +19,10 @@
 - [x] Perf test: 500k rows query < 50 ms, indexing throughput logged
 
 ## Phase 2 — Main process
-- [ ] SourceManager (add/remove, recursive scan, ignore rules), chokidar watching, change detection
-- [ ] Typed IPC bridge + zod validation
-- [ ] Bar window (always-on-top behaviour, click-through, custom drag, position memory, multi-monitor)
-- [ ] Tray, global hotkey, single instance, auto-launch, electron-store settings, logging
+- [x] SourceManager (add/remove, recursive scan, ignore rules), chokidar watching, change detection
+- [x] Typed IPC bridge + zod validation
+- [x] Bar window (always-on-top behaviour, click-through, custom drag, position memory, multi-monitor)
+- [x] Tray, global hotkey, single instance, auto-launch, electron-store settings, logging
 
 ## Phase 3 — UI (load design + motion skills first)
 - [ ] Theme tokens, fonts bundled, i18n (ar/he/en) with RTL, motion tokens

@@ -114,6 +114,17 @@ export class Indexer {
     })()
   }
 
+  /** Remove every indexed file below a folder (folder deleted or renamed). */
+  removeUnder(dir: string): void {
+    const prefix = dir.endsWith('/') || dir.endsWith('\\') ? dir : dir + (dir.includes('\\') ? '\\' : '/')
+    const rows = this.db
+      .prepare("SELECT id FROM files WHERE substr(path, 1, ?) = ?")
+      .all(prefix.length, prefix) as { id: number }[]
+    this.db.transaction(() => {
+      for (const r of rows) this.stmts.deleteFile.run(r.id)
+    })()
+  }
+
   /** Cheap check (size + mtime) whether a file might need re-indexing. */
   needsCheck(stat: FileStat): boolean {
     const row = this.stmts.fileByPath.get(stat.path) as FileRow | undefined

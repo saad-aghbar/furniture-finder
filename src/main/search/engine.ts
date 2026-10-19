@@ -29,6 +29,7 @@ export interface EngineResult {
 
 interface SheetMeta {
   name: string
+  /** Empty strings when the sheet has no header row (column letters are not shown). */
   headers: string[]
   nameCol: number | null
   filePath: string
@@ -56,7 +57,7 @@ export class SearchEngine {
 
   constructor(private readonly db: DB) {
     this.sheetStmt = db.prepare(
-      `SELECT s.name, s.headers_json, s.name_col, f.path AS file_path, f.name AS file_name, src.path AS source_path
+      `SELECT s.name, s.headers_json, s.header_row, s.name_col, f.path AS file_path, f.name AS file_name, src.path AS source_path
        FROM sheets s JOIN files f ON f.id = s.file_id JOIN sources src ON src.id = f.source_id WHERE s.id = ?`
     )
     this.vocabStmt = db.prepare('SELECT token FROM vocab')
@@ -81,12 +82,12 @@ export class SearchEngine {
     let meta = this.sheetCache.get(id)
     if (!meta) {
       const row = this.sheetStmt.get(id) as
-        | { name: string; headers_json: string; name_col: number | null; file_path: string; file_name: string; source_path: string }
+        | { name: string; headers_json: string; header_row: number | null; name_col: number | null; file_path: string; file_name: string; source_path: string }
         | undefined
       if (!row) return null
       meta = {
         name: row.name,
-        headers: JSON.parse(row.headers_json) as string[],
+        headers: row.header_row === null ? [] : (JSON.parse(row.headers_json) as string[]),
         nameCol: row.name_col,
         filePath: row.file_path,
         fileName: row.file_name,

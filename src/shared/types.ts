@@ -112,6 +112,8 @@ export interface SearchResponse {
   query: string
   results: SearchResult[]
   total: number
+  /** More matches exist than were ranked (shown as "1000+"). */
+  capped: boolean
   tookMs: number
   fuzzyUsed: boolean
 }
