@@ -35,6 +35,14 @@ jobs:
           FF_APP_EXE: ${{ github.workspace }}\release\win-unpacked\Furniture Finder.exe
           CI: '1'
         run: npx playwright test
+      - name: Create the GitHub Release first (electron-builder can otherwise create it twice)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          sed "s/<version>/$VERSION/g" .github/release-notes.md > notes.md
+          gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" --title "Furniture Finder $VERSION" --notes-file notes.md
       - name: Build the installer and publish it to the GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         run: npx electron-builder --win nsis --x64 --prepackaged release/win-unpacked --publish always

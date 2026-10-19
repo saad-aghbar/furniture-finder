@@ -42,7 +42,7 @@
 - [x] Playwright e2e: onboarding → index fixtures → search he/ar/en → scope → copy → move bar
 
 ## Phase 5 — Polish & verify
-- [ ] Go through ACCEPTANCE.md, fix everything
-- [ ] Tag `v1.0.0`, confirm Release has the installer, download it, sanity-check on Windows
+- [x] Go through ACCEPTANCE.md, fix everything
+- [x] Tag `v1.0.0`, confirm Release has the installer, download it, sanity-check on Windows
       (ask the owner to test on a Windows PC if none is available) 
 - [ ] Ask owner before making the repo public
