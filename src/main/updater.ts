@@ -5,6 +5,7 @@ import { log } from './log'
 
 const { autoUpdater } = electronUpdater
 const SIX_HOURS = 6 * 60 * 60 * 1000
+const IDLE_CHECK_MS = 60 * 1000
 
 /**
  * Quiet auto-update from GitHub Releases (the only network access of the app).
@@ -14,7 +15,16 @@ export class Updater {
   private downloaded: string | null = null
   private timer: NodeJS.Timeout | null = null
 
-  constructor(private readonly onReady: (version: string) => void) {}
+  private idleTimer: NodeJS.Timeout | null = null
+
+  /**
+   * @param onReady   shows the "Update ready" pill
+   * @param isIdle    true when nobody is using the app right now – the update then installs by itself
+   */
+  constructor(
+    private readonly onReady: (version: string) => void,
+    private readonly isIdle: () => boolean
+  ) {}
 
   get enabled(): boolean {
     return app.isPackaged && !process.env['FF_E2E'] && !process.env['FF_DISABLE_UPDATES']
@@ -29,6 +39,13 @@ export class Updater {
       this.downloaded = info.version
       log.info('update downloaded', info.version)
       this.onReady(info.version)
+      // Nobody needs to click anything: install quietly as soon as the app is not being used.
+      this.idleTimer ??= setInterval(() => {
+        if (this.isIdle()) {
+          log.info('installing update while idle', info.version)
+          this.install()
+        }
+      }, IDLE_CHECK_MS)
     })
     autoUpdater.on('error', (err) => log.warn('update error', err?.message))
     setTimeout(() => void this.check(), 10_000)
@@ -53,5 +70,6 @@ export class Updater {
 
   stop(): void {
     if (this.timer) clearInterval(this.timer)
+    if (this.idleTimer) clearInterval(this.idleTimer)
   }
 }

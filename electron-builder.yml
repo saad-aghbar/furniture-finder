@@ -34,10 +34,11 @@ win:
   # signtoolOptions:
   #   certificateSubjectName: "Your Company"
 nsis:
-  oneClick: false
+  # One click: no questions, no folder choice, no admin prompt. Installs for the current user,
+  # creates desktop + Start menu shortcuts and starts the app. The language follows Windows.
+  oneClick: true
   perMachine: false
   allowElevation: false
-  allowToChangeInstallationDirectory: true
   createDesktopShortcut: always
   createStartMenuShortcut: true
   shortcutName: Furniture Finder

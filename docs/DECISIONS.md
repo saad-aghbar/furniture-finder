@@ -105,3 +105,15 @@ Deviations from, or interpretations of, the spec. Newest at the bottom of each s
 - A new hotkey is registered before the old one is released; if it is taken, the old one stays.
 - Source add/remove calls are serialised; Windows paths compare case-insensitively.
 - A drag also ends when the pointer moves with no button pressed (release lost to another window).
+
+## Zero-touch install & updates (owner request)
+- **One-click NSIS installer** (`oneClick: true`, per-user): no folder choice, no "Install" button,
+  no admin prompt; shortcuts are created and the app starts. Installer language follows Windows.
+- Every release also carries `Furniture-Finder-Setup.exe` (no version in the name), so
+  `…/releases/latest/download/Furniture-Finder-Setup.exe` is one permanent link that downloads the
+  newest installer directly.
+- **Updates install themselves**: once downloaded, the update is installed silently and the app
+  relaunched as soon as nobody has used the app for 10 minutes (bar not focused, no search/copy,
+  no settings/manage window open). The "Update ready" pill still lets someone do it right away.
+- The SmartScreen "More info → Run anyway" step stays until the installer is code-signed (a paid
+  certificate / Azure Trusted Signing – needs the owner's spending approval).

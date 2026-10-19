@@ -46,6 +46,13 @@ jobs:
       - name: Build the installer and publish it to the GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         run: npx electron-builder --win nsis --x64 --prepackaged release/win-unpacked --publish always
+      - name: Also upload it as Furniture-Finder-Setup.exe (one link that always gets the newest version)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          cp "release/Furniture-Finder-Setup-$VERSION.exe" release/Furniture-Finder-Setup.exe
+          gh release upload "$GITHUB_REF_NAME" release/Furniture-Finder-Setup.exe --clobber
       - name: Build the installer (dry run, no publishing)
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: npx electron-builder --win nsis --x64 --prepackaged release/win-unpacked --publish never

@@ -22,6 +22,8 @@ import { DialogWindow } from './windows/dialogs'
 export const REPO_URL = 'https://github.com/saad-aghbar/furniture-finder'
 const MAX_RECENT_SEARCHES = 8
 const MAX_RECENT_COPIES = 50
+/** An update installs by itself after this long without anyone using the app. */
+const IDLE_BEFORE_UPDATE_MS = 10 * 60 * 1000
 
 type Handler<C extends InvokeChannel> = (
   payload: InvokeMap[C]['req'],
@@ -41,6 +43,13 @@ export class FurnitureFinderApp {
   private updater!: Updater
   private hotkey: string | null = null
   private quitting = false
+  private lastActivity = Date.now()
+
+  private isIdle(): boolean {
+    if (Date.now() - this.lastActivity < IDLE_BEFORE_UPDATE_MS) return false
+    if (this.bar.win?.isFocused()) return false
+    return !this.onboarding.win && !this.settingsWin.win
+  }
 
   async start(): Promise<void> {
     settings.init()
@@ -69,7 +78,10 @@ export class FurnitureFinderApp {
       quit: () => this.quit()
     })
     this.tray.sync()
-    this.updater = new Updater((version) => send(this.bar.win, 'update:ready', { version }))
+    this.updater = new Updater(
+      (version) => send(this.bar.win, 'update:ready', { version }),
+      () => this.isIdle()
+    )
     this.updater.start()
     this.registerHotkey(settings.get('hotkey'))
     this.applyLoginItem(settings.get('startWithWindows'))
@@ -165,6 +177,7 @@ export class FurnitureFinderApp {
 
   private handle<C extends InvokeChannel>(channel: C, fn: Handler<C>): void {
     ipcMain.handle(channel, async (event, raw: unknown) => {
+      if (channel !== 'bar:hover' && channel !== 'bar:layout') this.lastActivity = Date.now()
       const parsed = schemas[channel].safeParse(raw)
       if (!parsed.success) {
         log.warn('rejected IPC payload', channel, parsed.error.message)

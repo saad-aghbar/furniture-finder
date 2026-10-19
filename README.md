@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/saad-aghbar/furniture-finder/releases/latest"><b>⬇ Download for Windows</b></a>
+  <a href="https://github.com/saad-aghbar/furniture-finder/releases/latest/download/Furniture-Finder-Setup.exe"><b>⬇ Download for Windows</b></a>
   &nbsp;·&nbsp; <a href="#english">English</a> &nbsp;·&nbsp; <a href="#arabic">العربية</a> &nbsp;·&nbsp; <a href="#hebrew">עברית</a>
 </p>
 
@@ -34,12 +34,12 @@
 
 ### Download & install
 
-1. Open **<https://github.com/saad-aghbar/furniture-finder/releases/latest>**.
-2. Under **Assets**, click **`Furniture-Finder-Setup-1.0.0.exe`** (the newest version number may be higher).
-3. Open the downloaded file. Windows may show a blue box **“Windows protected your PC”**.
-   This happens with new programs that are not yet well known. Click **More info**, then **Run anyway**.
-4. Choose where to install (the suggested place is fine) and click **Install**. No administrator password is needed.
-5. Furniture Finder opens by itself at the end.
+1. Click this link – the installer downloads straight away: **[Download Furniture Finder](https://github.com/saad-aghbar/furniture-finder/releases/latest/download/Furniture-Finder-Setup.exe)**
+2. Open the downloaded file **Furniture-Finder-Setup.exe**.
+3. If Windows shows a blue box **“Windows protected your PC”**, click **More info**, then **Run anyway**.
+   (This appears because the program is new; it is safe.)
+4. That's it – it installs by itself in a few seconds, puts an icon on the desktop and opens.
+   No questions, no administrator password. New versions also install by themselves.
 
 ### First start
 
@@ -86,7 +86,7 @@
 
 **Does my data go online?** No. Everything is searched on this computer, also without internet. Your Excel files are only read, never changed. The only internet access is a quiet check for new versions on GitHub.
 
-**How do I update?** Updates download by themselves. When one is ready, a green **Update ready – restart** button appears on the bar.
+**How do I update?** You don't. New versions download and install by themselves while the bar is not in use.
 
 **How do I uninstall?** Windows Settings → Apps → Furniture Finder → Uninstall.
 
@@ -100,12 +100,12 @@
 
 ### التنزيل والتثبيت
 
-1. افتح **<https://github.com/saad-aghbar/furniture-finder/releases/latest>**.
-2. في قسم **Assets** انقر على الملف **`Furniture-Finder-Setup-1.0.0.exe`** (قد يكون رقم الإصدار أحدث).
-3. افتح الملف الذي تم تنزيله. قد يُظهر ويندوز نافذة زرقاء بعنوان **«Windows protected your PC»**.
-   هذا يحدث مع البرامج الجديدة غير المعروفة بعد. انقر على **More info** (مزيد من المعلومات) ثم على **Run anyway** (تشغيل على أي حال).
-4. اختر مكان التثبيت (المكان المقترح مناسب) وانقر **Install**. لا حاجة إلى كلمة مرور المسؤول.
-5. يفتح باحث الأثاث تلقائياً في النهاية.
+1. انقر على هذا الرابط – يبدأ تنزيل البرنامج فوراً: **[تنزيل باحث الأثاث](https://github.com/saad-aghbar/furniture-finder/releases/latest/download/Furniture-Finder-Setup.exe)**
+2. افتح الملف الذي تم تنزيله **Furniture-Finder-Setup.exe**.
+3. إذا ظهرت نافذة زرقاء بعنوان **«Windows protected your PC»** انقر **More info** ثم **Run anyway**.
+   (تظهر لأن البرنامج جديد، وهو آمن.)
+4. هذا كل شيء – يُثبَّت وحده خلال ثوانٍ، ويضع أيقونة على سطح المكتب ويفتح.
+   بلا أسئلة وبلا كلمة مرور. والإصدارات الجديدة تُثبَّت وحدها أيضاً.
 
 ### التشغيل الأول
 
@@ -141,7 +141,7 @@
 
 **هل تذهب بياناتي إلى الإنترنت؟** لا. البحث يتم على هذا الحاسوب فقط، ويعمل دون إنترنت. ملفات الإكسل تُقرأ فقط ولا تُعدَّل أبداً. الاتصال الوحيد هو فحص هادئ للتحديثات على GitHub.
 
-**كيف أحدّث البرنامج؟** التحديثات تُنزَّل تلقائياً. عندما يكون التحديث جاهزاً يظهر زر أخضر **التحديث جاهز – أعد التشغيل** على الشريط.
+**كيف أحدّث البرنامج؟** لا حاجة لفعل شيء. الإصدارات الجديدة تُنزَّل وتُثبَّت وحدها عندما لا يكون الشريط قيد الاستخدام.
 
 </div>
 
@@ -155,12 +155,12 @@
 
 ### הורדה והתקנה
 
-1. פתחו את **<https://github.com/saad-aghbar/furniture-finder/releases/latest>**.
-2. תחת **Assets** לחצו על הקובץ **`Furniture-Finder-Setup-1.0.0.exe`** (מספר הגרסה עשוי להיות חדש יותר).
-3. פתחו את הקובץ שהורד. ייתכן ש־Windows יציג חלון כחול **„Windows protected your PC”**.
-   זה קורה עם תוכנות חדשות שעוד לא מוכרות. לחצו על **More info** (מידע נוסף) ואז על **Run anyway** (הפעל בכל זאת).
-4. בחרו היכן להתקין (המקום המוצע מתאים) ולחצו **Install**. אין צורך בסיסמת מנהל.
-5. מאתר הרהיטים נפתח לבד בסוף ההתקנה.
+1. לחצו על הקישור – התוכנה מתחילה לרדת מיד: **[הורדת מאתר הרהיטים](https://github.com/saad-aghbar/furniture-finder/releases/latest/download/Furniture-Finder-Setup.exe)**
+2. פתחו את הקובץ שירד **Furniture-Finder-Setup.exe**.
+3. אם מופיע חלון כחול **„Windows protected your PC”** לחצו **More info** ואז **Run anyway**.
+   (הוא מופיע כי התוכנה חדשה; היא בטוחה.)
+4. זהו – היא מותקנת לבד תוך שניות, יוצרת סמל על שולחן העבודה ונפתחת.
+   בלי שאלות ובלי סיסמת מנהל. גם גרסאות חדשות מותקנות לבד.
 
 ### הפעלה ראשונה
 
@@ -194,7 +194,7 @@
 
 **האם המידע שלי עולה לאינטרנט?** לא. החיפוש מתבצע רק במחשב הזה, וגם בלי אינטרנט. קובצי האקסל רק נקראים ולעולם לא משתנים. החיבור היחיד הוא בדיקה שקטה לעדכונים ב־GitHub.
 
-**איך מעדכנים?** עדכונים יורדים לבד. כשעדכון מוכן מופיע על הסרגל כפתור ירוק **עדכון מוכן – הפעלה מחדש**.
+**איך מעדכנים?** לא צריך לעשות כלום. גרסאות חדשות יורדות ומותקנות לבד כשלא משתמשים בסרגל.
 
 </div>
 
