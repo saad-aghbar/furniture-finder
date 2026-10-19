@@ -1,22 +1,22 @@
 # Build Plan — work top to bottom, commit + push after each phase
 
 ## Phase 0 — Repo & scaffold
-- [ ] Step 0 from CLAUDE.md (git init, .gitignore, private GitHub repo, push)
-- [ ] Scaffold electron-vite React TS; strict tsconfig, ESLint, Prettier
-- [ ] Install stack deps (ARCHITECTURE.md §Stack); confirm `npm run dev` opens a window on macOS
-- [ ] CI workflow (lint/typecheck/unit) green
-- [ ] Create `docs/DECISIONS.md` for any deviation
+- [x] Step 0 from CLAUDE.md (git init, .gitignore, private GitHub repo, push)
+- [x] Scaffold electron-vite React TS; strict tsconfig, ESLint, Prettier
+- [x] Install stack deps (ARCHITECTURE.md §Stack); confirm `npm run dev` opens a window on macOS
+- [x] CI workflow (lint/typecheck/unit) green
+- [x] Create `docs/DECISIONS.md` for any deviation
 
 ## Phase 1 — Core engine (no UI)
-- [ ] `normalize.ts` + exhaustive unit tests (Arabic, Hebrew, English, mixed, codes, digits, offset map)
-- [ ] Test fixtures: generate sample workbooks with a script (`scripts/make-fixtures.ts`):
+- [x] `normalize.ts` + exhaustive unit tests (Arabic, Hebrew, English, mixed, codes, digits, offset map)
+- [x] Test fixtures: generate sample workbooks with a script (`scripts/make-fixtures.ts`):
       Hebrew catalogue, Arabic price list, English supplier list, mixed sheet, merged headers,
       header on row 4, .xls, .csv (UTF-8 + Windows-1255/1256), corrupt file, password file,
       a 200k-row file for perf
-- [ ] Parser + header detection + name-column detection (tests)
-- [ ] SQLite schema, migrations, indexer worker with progress events, batched inserts
-- [ ] Search pipeline: FTS trigram + short terms + scope + ranking + fuzzy + highlights (tests)
-- [ ] Perf test: 500k rows query < 50 ms, indexing throughput logged
+- [x] Parser + header detection + name-column detection (tests)
+- [x] SQLite schema, migrations, indexer worker with progress events, batched inserts
+- [x] Search pipeline: FTS trigram + short terms + scope + ranking + fuzzy + highlights (tests)
+- [x] Perf test: 500k rows query < 50 ms, indexing throughput logged
 
 ## Phase 2 — Main process
 - [ ] SourceManager (add/remove, recursive scan, ignore rules), chokidar watching, change detection
