@@ -57,7 +57,7 @@ export interface OverlayState {
 
 export interface AppInfo {
   version: string
-  platform: NodeJS.Platform
+  platform: string
   isPackaged: boolean
   logsPath: string
   repoUrl: string
@@ -187,5 +187,5 @@ export interface FFBridge {
   on<C extends EventChannel>(channel: C, listener: (payload: EventMap[C]) => void): () => void
   /** Absolute path of a dropped File (drag & drop). */
   pathForFile(file: File): string
-  platform: NodeJS.Platform
+  platform: string
 }
