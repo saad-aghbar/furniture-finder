@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": ["node", "electron-vite/node"],
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.node.tsbuildinfo"
+  },
+  "include": [
+    "electron.vite.config.ts",
+    "vitest.config.ts",
+    "vitest.perf.config.ts",
+    "playwright.config.ts",
+    "src/main/**/*",
+    "src/preload/**/*",
+    "src/indexer/**/*",
+    "src/shared/**/*",
+    "src/renderer/i18n/*.json",
+    "tests/**/*",
+    "scripts/**/*.ts"
+  ]
+}
