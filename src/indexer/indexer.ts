@@ -4,7 +4,7 @@ import { basename } from 'node:path'
 import { fuzzyTokens, indexText, normalize } from '../shared/normalize'
 import type { FileErrorKey, FileStatus } from '../shared/types'
 import type { DB } from './db'
-import { detectHeader, detectNameColumn } from './headers'
+import { assignBlocks, detectHeader, detectNameColumn } from './headers'
 import { ParseError, parseBuffer, readFileShared } from './parse'
 
 const MAX_COLS = 200
@@ -70,7 +70,7 @@ export class Indexer {
          VALUES (?, ?, ?, ?, ?, ?, ?)`
       ),
       insertRow: db.prepare(
-        `INSERT INTO rows(sheet_id, row_num, cells_json, display_title, title_norm, norm_text) VALUES (?, ?, ?, ?, ?, ?)`
+        `INSERT INTO rows(sheet_id, row_num, cells_json, display_title, title_norm, norm_text, block_start) VALUES (?, ?, ?, ?, ?, ?, ?)`
       ),
       insertToken: db.prepare('INSERT OR IGNORE INTO vocab(token) VALUES (?)'),
       fileCounts: db.prepare(
@@ -220,14 +220,15 @@ export class Indexer {
           JSON.stringify(headers),
           nameCol
         ).lastInsertRowid as number
-        for (const d of dataRows) {
+        const blocks = assignBlocks(dataRows, nameCol)
+        dataRows.forEach((d, i) => {
           const title = (nameCol !== null ? d.cells[nameCol] : '') || d.cells.find((c) => c.length > 0) || ''
           const norm = indexText(d.cells)
-          this.stmts.insertRow.run(sheetId, d.rowNum, JSON.stringify(d.cells), title, normalize(title), norm)
+          this.stmts.insertRow.run(sheetId, d.rowNum, JSON.stringify(d.cells), title, normalize(title), norm, blocks[i] ?? null)
           for (const t of fuzzyTokens(norm)) tokens.add(t)
           rowCount++
           if (rowCount % BATCH === 0) opts.onRows?.(rowCount)
-        }
+        })
       })
       for (const t of tokens) this.stmts.insertToken.run(t)
       this.stmts.updateFile.run(stat.size, stat.mtime, hash, Date.now(), 'ok', null, existing.id)

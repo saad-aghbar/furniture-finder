@@ -15,14 +15,18 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/search-hebrew.png" width="430" alt="Searching in Hebrew" />
+  <img src="docs/screenshots/product-options.png" width="430" alt="A model number shows the product with all its options and prices" />
   &nbsp;
-  <img src="docs/screenshots/dark-arabic.png" width="430" alt="Arabic interface in dark mode" />
+  <img src="docs/screenshots/search-price.png" width="430" alt="Searching a price highlights the matching option" />
 </p>
 
 - Searches **every row of every sheet** of every Excel file in the folders you choose (`.xlsx .xlsm .xlsb .xls .csv .ods`).
 - Ignores niqqud and tashkeel, treats Arabic letter variants and Hebrew final letters as the same, finds parts of words, forgives typing mistakes, matches codes like `A-12` → `A-1203`.
-- **Click a card → the whole row is copied.** Paste into Excel and you get cells; paste into WhatsApp and you get readable lines.
+- **One card per product.** In price lists where a model is written once (merged cell) with one row per option –
+  armchair, 2+3, 3-seater… – searching the model number or name shows the product with **all** its options and
+  prices in a table; searching a price or an option highlights the matching row. Prices match with or without
+  commas (`3850` = `3,850`).
+- **Click a card → the whole row (or the whole product) is copied.** Click one option to copy just that option. Paste into Excel and you get cells; paste into WhatsApp and you get readable lines.
 - Always on top — even over full-screen Excel. Never in the taskbar or Alt-Tab.
 - 100 % offline and private: your files never leave the computer. The app only checks GitHub for updates.
 

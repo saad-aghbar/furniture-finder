@@ -119,6 +119,62 @@ const row4: Row[] = [
   ['TV stand', 'South', 3]
 ]
 
+// ---------- Real-world layout (owner's price list): one product per merged block of option rows ----------
+function priceList(): XLSX.WorkSheet {
+  const rows: Row[] = [
+    [null, 'שכם', 'זאפר : 050-0000001', 'אבו-זאפר 050-0000002', 'טל:09/0000001', null, 'פקס:09/0000002'],
+    [null, null, null, null, null, null, "מס' : 15"],
+    [null, null, 'ד', 'מחיר ללא מע"מ', null, null, null],
+    [null, "מס' הדגם", 'שם הדגם', 'כמות', 'מחיר בלי בד', null, 'כמות הבד']
+  ]
+  const merges: XLSX.Range[] = [{ s: { r: 2, c: 3 }, e: { r: 2, c: 4 } }]
+  const block = (model: string | null, name: string, options: [string, number, string][]): void => {
+    const start = rows.length
+    options.forEach(([opt, price, fabric], i) => rows.push([null, i === 0 ? model : null, i === 0 ? name : null, opt, price, null, fabric]))
+    if (options.length > 1) {
+      merges.push({ s: { r: start, c: 2 }, e: { r: start + options.length - 1, c: 2 } })
+      if (model) merges.push({ s: { r: start, c: 1 }, e: { r: start + options.length - 1, c: 1 } })
+    }
+  }
+  block('פינתי', "סלון דגם מס' 8665 גודל 2.90 × 2.20 מ'", [['3+שזלון', 3850, '17מטר']])
+  block(null, "סלון דגם מס' 8665", [
+    ['כורסא גוקר', 880, '5.50מטר'],
+    ['2+3', 3850, '18מטר'],
+    ['כורסא', 1100, '5.50מטר'],
+    ['דו מושבי', 1650, '8מטר'],
+    ['תלת מושבי', 2200, '11מטר'],
+    ["ספה אורך 3.00 מ'", 2750, '13מטר']
+  ])
+  block('פינתי', "סלון דגם מס' 8888 עם נוצות", [
+    ['3+שזלון', 4600, '18מטר'],
+    ['2+3', 4600, '18מטר'],
+    ['כורסא', 1320, '6מטר'],
+    ['דו מושבי', 2000, '8מטר'],
+    ['תלת מושבי', 2650, '11מטר'],
+    ["ספה אורך 3.00 מ'", 3300, '13מטר']
+  ])
+  block(null, "דומינגו אורך 1.80 מ'", [['1', 1050, '4מטר']])
+  block(null, 'סלון דגם דרים', [
+    ['2+3', 3200, '18מטר'],
+    ['כורסא', 920, '6מטר'],
+    ['דו מושבי', 1370, '8מטר'],
+    ['תלת מושבי', 1830, '11מטר'],
+    ["ספה אורך 3.00 מ'", 2300, '13מטר']
+  ])
+  block(null, "סלון מס' 901 3.10 מ' / 2.10 מ'", [
+    ['3 + שזלון', 3100, '19מטר'],
+    ['2+3', 3300, '21מטר'],
+    ['כורסא', 950, '6מטר'],
+    ['דו מושבי', 1420, '9מטר'],
+    ['תלת מושבי', 1890, '12מטר'],
+    ["ספה אורך 3.00 מ'", 2360, '15מטר']
+  ])
+  block(null, 'מיטה דגם דובה', [['1', 2200, '10מטר']])
+  const ws = sheet(rows, { 4: '"₪" #,##0' })
+  ws['!merges'] = merges
+  return ws
+}
+
 function encryptedFile(): Buffer {
   const cfb = XLSX.CFB.utils.cfb_new()
   XLSX.CFB.utils.cfb_add(cfb, '/EncryptionInfo', Buffer.from([4, 0, 4, 0, 0x40, 0, 0, 0]))
@@ -148,6 +204,7 @@ function main(): void {
   write(book({ Mixed: sheet(mixedRows) }), join(SAMPLE, 'suppliers', 'mixed', 'Mixed.xlsm'), 'xlsm')
   write(book({ Merged: mergedHeaders() }), join(SAMPLE, 'merged-headers.xlsx'))
   write(book({ Stock: sheet(row4) }), join(SAMPLE, 'header-row-4.xlsx'))
+  write(book({ 'اسعار 2026 الجديدة': priceList(), 'ורקה1': sheet([['x']]) }), join(SAMPLE, 'מחירון סלונים 2026.xlsx'))
   write(book({ Legacy: sheet(enRows.slice(0, 4)) }), join(SAMPLE, 'legacy.xls'), 'biff8')
   write(book({ Binary: sheet(mixedRows) }), join(SAMPLE, 'binary.xlsb'), 'xlsb')
   write(book({ Open: sheet(row4.slice(3)) }), join(SAMPLE, 'open-document.ods'), 'ods')

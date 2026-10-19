@@ -117,9 +117,18 @@ export function parseBuffer(buf: Buffer, fileName: string): ParsedSheet[] {
       grid.push(out)
     }
     for (const m of ws['!merges'] ?? []) {
-      if (m.s.r >= MERGE_FILL_ROWS) continue
       const v = grid[m.s.r]?.[m.s.c] ?? ''
       if (!v) continue
+      // Vertical merges in the data ("one product name for several option rows"): the value belongs
+      // to every row it covers. Fill the merge's first column only, so a value never appears twice.
+      for (let r = Math.max(m.s.r + 1, MERGE_FILL_ROWS); r <= m.e.r; r++) {
+        const row = grid[r] ?? (grid[r] = [])
+        while (row.length <= m.s.c) row.push('')
+        if (!row[m.s.c]) row[m.s.c] = v
+        if (row.length > width) width = row.length
+      }
+      if (m.s.r >= MERGE_FILL_ROWS) continue
+      // Header area: spread the value over every merged cell (multi-column headers).
       for (let r = m.s.r; r <= Math.min(m.e.r, MERGE_FILL_ROWS - 1); r++) {
         const row = grid[r] ?? (grid[r] = [])
         for (let c = m.s.c; c <= m.e.c; c++) {

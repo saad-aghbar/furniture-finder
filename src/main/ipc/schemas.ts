@@ -49,6 +49,12 @@ export const schemas: Record<InvokeChannel, z.ZodType> = {
   'recent:add': z.string().min(1).max(500),
   'recent:clear': none,
   'copy:row': z.object({ cells: z.array(copyCell).max(1000), withHeaders: z.boolean(), key: z.string().max(10_000) }),
+  'copy:rows': z.object({
+    title: z.string().max(10_000),
+    rows: z.array(z.array(copyCell).max(1000)).min(1).max(200),
+    withHeaders: z.boolean(),
+    key: z.string().max(10_000)
+  }),
   'copy:text': z.string().max(100_000),
   'excel:open': z.object({ filePath: path, sheet: z.string().max(512), row: z.number().int().min(1) }),
   'bar:layout': none,

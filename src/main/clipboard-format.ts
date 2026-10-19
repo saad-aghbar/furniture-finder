@@ -30,6 +30,31 @@ export function formatRow(cells: CopyCell[], withHeaders: boolean): ClipboardPay
   return { text, html }
 }
 
+/**
+ * A whole product (several option rows). Excel gets a table – one row per option, with the column
+ * titles on top when `withHeaders` – and chat apps get the product name followed by one readable
+ * line per option ("Armchair · Price: ₪ 1,100 · Fabric: 6m").
+ */
+export function formatRows(title: string, rows: CopyCell[][], withHeaders: boolean): ClipboardPayload {
+  const headers: string[] = []
+  for (const row of rows) for (const c of row) if (c.value.trim() && !headers.includes(c.header)) headers.push(c.header)
+  const lines = rows.map((row) =>
+    row
+      .filter((c) => c.value.trim() && c.value !== title)
+      .map((c) => (c.header ? `${c.header}: ${c.value}` : c.value))
+      .join(' · ')
+  )
+  const text = [title, ...lines.map((l) => `• ${l}`)].join('\n')
+  const td = (v: string, tag: 'td' | 'th'): string =>
+    `<${tag}${keepAsText(v) ? ' style="mso-number-format:\'\\@\'"' : ''}>${esc(v)}</${tag}>`
+  const head = withHeaders ? `<tr>${headers.map((h) => td(h, 'th')).join('')}</tr>` : ''
+  const body = rows
+    .map((row) => `<tr>${headers.map((h) => td(row.find((c) => c.header === h)?.value ?? '', 'td')).join('')}</tr>`)
+    .join('')
+  const html = '<html><head><meta charset="utf-8"></head><body>' + `<table>${head}${body}</table></body></html>`
+  return { text, html }
+}
+
 /** Tab-separated variant (one row, optional header row), used in tests and as a fallback. */
 export function formatTsv(cells: CopyCell[], withHeaders: boolean): string {
   const filled = cells.filter((c) => c.value.trim().length > 0)

@@ -4,7 +4,7 @@ import { openReadDb, type DB } from '../indexer/db'
 import { detectLang, translate } from '../shared/i18n'
 import type { InvokeChannel, InvokeMap } from '../shared/ipc'
 import { EXCEL_EXTENSIONS, type Settings } from '../shared/types'
-import { formatRow } from './clipboard-format'
+import { formatRow, formatRows } from './clipboard-format'
 import { openInExcel } from './excel'
 import { IndexerHost } from './indexer-host'
 import { schemas } from './ipc/schemas'
@@ -233,6 +233,14 @@ export class FurnitureFinderApp {
     h('copy:row', async ({ cells, withHeaders, key }) => {
       const { text, html } = formatRow(cells, withHeaders)
       // Excel takes the HTML table (cells), WhatsApp/Notepad take the plain text lines.
+      await clipboard.write([new ClipboardItem({ 'text/plain': text, 'text/html': html })])
+      if (key) {
+        const list = [key, ...settings.get('recentlyCopied').filter((k) => k !== key)].slice(0, MAX_RECENT_COPIES)
+        settings.set({ recentlyCopied: list })
+      }
+    })
+    h('copy:rows', async ({ title, rows, withHeaders, key }) => {
+      const { text, html } = formatRows(title, rows, withHeaders)
       await clipboard.write([new ClipboardItem({ 'text/plain': text, 'text/html': html })])
       if (key) {
         const list = [key, ...settings.get('recentlyCopied').filter((k) => k !== key)].slice(0, MAX_RECENT_COPIES)

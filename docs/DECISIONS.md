@@ -117,3 +117,22 @@ Deviations from, or interpretations of, the spec. Newest at the bottom of each s
   no settings/manage window open). The "Update ready" pill still lets someone do it right away.
 - The SmartScreen "More info → Run anyway" step stays until the installer is code-signed (a paid
   certificate / Azure Trusted Signing – needs the owner's spending approval).
+
+## Products with several option rows (owner's real price list, v1.0.2)
+- The owner's sheets write each product once in a **vertically merged cell** with one row per option
+  (armchair, 2+3, 3-seater…, each with its own price). Vertical merges now give their value to every row
+  they cover (data area too, first column of the merge only, so nothing is duplicated sideways), and an
+  empty product-name cell directly below a product inherits its name.
+- Consecutive rows with the same product name form a **block** (`rows.block_start`). Search returns one
+  card per block carrying all its options (up to 60), with the options that matched flagged; ranking uses
+  the best-matching option. Single-row products keep the simple card.
+- The options table shows only the columns that differ between options; identical ones (e.g. "corner")
+  appear once as chips. Price columns (title says price/מחיר/سعر or the value has ₪ $ € £) are bold.
+  Each card and its table follow the writing direction of the data, so Hebrew price lists read RTL even in
+  the English UI.
+- Copying a product copies all options (Excel: a table; WhatsApp: product name + one line per option);
+  clicking one option copies just that option with its product name.
+- Thousands separators between digits are dropped by the normaliser (`3,850` → `3850`), so prices match
+  however they are typed (normaliser v5 – the index rebuilds itself once after the update).
+- Header detection prefers the row with the most typical column titles (שם/מחיר/כמות/price/سعر…), which skips
+  company-name and phone-number lines above the table.

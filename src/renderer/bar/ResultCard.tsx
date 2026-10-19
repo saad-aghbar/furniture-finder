@@ -1,7 +1,8 @@
 import { AnimatePresence, motion, useAnimate } from 'motion/react'
-import { Copy, FileSpreadsheet, Table2 } from 'lucide-react'
+import { Copy, FileSpreadsheet, Layers, Table2 } from 'lucide-react'
 import { memo, useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
-import type { ResultCell, SearchResult } from '@shared/types'
+import type { BlockOption, ResultCell, SearchResult } from '@shared/types'
+import { dataDir, isPrice } from './cells'
 import { useApp } from '../shared/AppProvider'
 import { dur, fade, shake, shakeTransition, spring } from '../motion/tokens'
 import s from './results.module.css'
@@ -68,18 +69,35 @@ function ResultCardImpl({ result, selected, hlKey, stagger, copyHeaders, onSelec
     return { x: (r?.width ?? 200) / 2, y: 28 }
   }
 
+  const options = result.block && result.block.options.length > 1 ? result.block.options : null
+
   const copyRow = useCallback(
     async (withHeaders: boolean, at?: { x: number; y: number }) => {
       const cells = result.cells.map((c) => ({ header: c.header, value: c.value }))
       const key = `${result.filePath}\u0000${result.sheetName}\u0000${result.rowNum}`
       if (!reduceMotion && body.current) void animateBody(body.current, { scale: [0.98, 1] }, spring.snappy)
-      await window.ff.invoke('copy:row', { cells, withHeaders, key })
+      if (options) {
+        // a product: copy all of its options
+        const rows = options.map((o) => o.cells.map((c) => ({ header: c.header, value: c.value })))
+        await window.ff.invoke('copy:rows', { title: result.title.value, rows, withHeaders, key })
+      } else await window.ff.invoke('copy:row', { cells, withHeaders, key })
       const p = at ?? centre()
       showPill(p.x, p.y, t('bar.copied'))
       onCopied()
     },
-    [result, showPill, t, onCopied, reduceMotion, animateBody, body]
+    [result, options, showPill, t, onCopied, reduceMotion, animateBody, body]
   )
+
+  const copyOption = async (e: MouseEvent, option: BlockOption): Promise<void> => {
+    e.stopPropagation()
+    if (window.getSelection()?.toString()) return
+    onSelect(result.rowId)
+    const at = localPoint(e)
+    const cells = option.cells.map((c) => ({ header: c.header, value: c.value }))
+    await window.ff.invoke('copy:row', { cells, withHeaders: copyHeaders, key: `${result.filePath}\u0000${result.sheetName}\u0000${option.rowNum}` })
+    showPill(at.x, at.y, t('bar.copied'))
+    onCopied()
+  }
 
   const openExcel = useCallback(async () => {
     const p = centre()
@@ -155,22 +173,31 @@ function ResultCardImpl({ result, selected, hlKey, stagger, copyHeaders, onSelec
       }
     >
       <div ref={body} className={s.cardBody}>
-      <div className={s.titleRow}>
+      <div className={s.titleRow} dir={dataDir(result.title.value)}>
         <span className={s.title}>
           <Highlighted cell={result.title} hlKey={hlKey} />
         </span>
+        {options && (
+          <span className={`${s.badge} ${s.badgeOptions}`}>
+            <Layers size={13} strokeWidth={2} aria-hidden />
+            {t('bar.optionsCount', { count: options.length })}
+          </span>
+        )}
         {result.similar && <span className={s.badge}>{t('bar.similar')}</span>}
         {result.offline && <span className={`${s.badge} ${s.badgeOffline}`}>{t('bar.offlineBadge')}</span>}
       </div>
 
-      {result.details.length > 0 && (
-        <div className={s.chips}>
+      {options && <ProductOptions options={options} titleCol={result.title.col} hlKey={hlKey} selected={selected} onCopyOption={copyOption} />}
+
+      {!options && result.details.length > 0 && (
+        <div className={s.chips} dir={dataDir(result.title.value)}>
           {details.map((cell) => (
             <button
               key={cell.col}
               type="button"
               className={s.chip}
               data-flash={flash === cell.col}
+              data-price={isPrice(cell)}
               onClick={(e) => void onChip(e, cell)}
               tabIndex={selected ? 0 : -1}
             >
@@ -206,7 +233,11 @@ function ResultCardImpl({ result, selected, hlKey, stagger, copyHeaders, onSelec
           <span className={s.sep} aria-hidden>
             ›
           </span>
-          <span className="num">{t('bar.row', { row: result.rowNum })}</span>
+          <span className={`num ${s.rowLabel}`}>
+            {options
+              ? t('bar.rows', { from: options[0]!.rowNum, to: options[options.length - 1]!.rowNum })
+              : t('bar.row', { row: result.rowNum })}
+          </span>
         </span>
         <span className={s.actions}>
           <button
@@ -220,7 +251,7 @@ function ResultCardImpl({ result, selected, hlKey, stagger, copyHeaders, onSelec
             tabIndex={selected ? 0 : -1}
           >
             <Copy size={15} strokeWidth={1.75} aria-hidden />
-            {t('bar.copyRow')}
+            {options ? t('bar.copyAll') : t('bar.copyRow')}
           </button>
           <button
             type="button"
@@ -288,3 +319,90 @@ function ResultCardImpl({ result, selected, hlKey, stagger, copyHeaders, onSelec
 }
 
 export const ResultCard = memo(ResultCardImpl)
+
+/**
+ * All options of one product as a small table. Columns that are the same for every option
+ * (e.g. "corner") are shown once as chips; prices are emphasised; options that matched the search
+ * are marked. Clicking an option copies just that option.
+ */
+function ProductOptions({
+  options,
+  titleCol,
+  hlKey,
+  selected,
+  onCopyOption
+}: {
+  options: BlockOption[]
+  titleCol: number
+  hlKey: string
+  selected: boolean
+  onCopyOption: (e: MouseEvent, o: BlockOption) => void
+}): ReactNode {
+  const { t } = useApp()
+  const cols = [...new Set(options.flatMap((o) => o.cells.map((c) => c.col)))].sort((a, b) => a - b).filter((c) => c !== titleCol)
+  const cell = (o: BlockOption, col: number): ResultCell | undefined => o.cells.find((c) => c.col === col)
+  const header = (col: number): string => options.map((o) => cell(o, col)?.header).find(Boolean) ?? ''
+  const first = options[0]!
+  const shared = cols.filter((col) => {
+    const v = cell(first, col)?.value
+    return !!v && options.every((o) => cell(o, col)?.value === v)
+  })
+  const varying = cols.filter((col) => !shared.includes(col) && options.some((o) => cell(o, col)))
+  const anyMatched = options.some((o) => o.matched) && !options.every((o) => o.matched)
+  // the table follows the language of the data (a Hebrew price list reads right-to-left)
+  const dir = dataDir(cell(first, titleCol)?.value ?? first.cells[0]?.value ?? '')
+
+  return (
+    <>
+      {shared.length > 0 && (
+        <div className={s.chips} dir={dir}>
+          {shared.map((col) => (
+            <span key={col} className={s.chip}>
+              {header(col) && <span className={s.chipHeader}>{header(col)}:</span>}
+              <span className={s.chipValue}>
+                <Highlighted cell={cell(first, col)!} hlKey={hlKey} />
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
+      <div className={s.optionsWrap} dir={dir}>
+        <table className={s.options}>
+          <thead>
+            <tr>
+              {varying.map((col) => (
+                <th key={col}>{header(col)}</th>
+              ))}
+              <th aria-hidden />
+            </tr>
+          </thead>
+          <tbody>
+            {options.map((o) => (
+              <tr
+                key={o.rowId}
+                className={s.option}
+                data-matched={anyMatched && o.matched}
+                onClick={(e) => onCopyOption(e, o)}
+                title={t('bar.copyOption')}
+              >
+                {varying.map((col) => {
+                  const c = cell(o, col)
+                  return (
+                    <td key={col} className={c && isPrice(c) ? s.price : undefined}>
+                      {c ? <Highlighted cell={c} hlKey={hlKey} /> : ''}
+                    </td>
+                  )
+                })}
+                <td className={s.optionCopy}>
+                  <button type="button" aria-label={t('bar.copyOption')} tabIndex={selected ? 0 : -1} onClick={(e) => onCopyOption(e, o)}>
+                    <Copy size={15} strokeWidth={1.75} aria-hidden />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )
+}

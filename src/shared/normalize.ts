@@ -6,7 +6,7 @@
  * Bump NORMALIZER_VERSION whenever the output of normalize() changes; the index is
  * rebuilt automatically when the stored version differs.
  */
-export const NORMALIZER_VERSION = 4
+export const NORMALIZER_VERSION = 5
 
 /** Single-character folds applied after NFKC + lower-casing. */
 const FOLD: Record<string, string> = {
@@ -35,6 +35,8 @@ const TATWEEL = 'ـ'
 const INWORD_QUOTES = new Set(['׳', '״', "'", '"', '’', '‘', '`', '´'])
 /** Kept inside codes such as A-12/3 or 1.5 */
 const CODE_SEPARATORS = new Set(['-', '/', '.'])
+/** Thousands separators: dropped between digits so "3,850" matches "3850" (and "3,850"). */
+const THOUSANDS = new Set([',', '\u066C', '\u2009', '\u202F'])
 
 const RE_MARK = /\p{M}/u
 const RE_FORMAT = /\p{Cf}/u
@@ -56,7 +58,7 @@ export interface NormalizedText {
   ends: number[]
 }
 
-type Kind = 'char' | 'space' | 'sep' | 'quote'
+type Kind = 'char' | 'space' | 'sep' | 'quote' | 'thousands'
 interface Piece {
   ch: string
   kind: Kind
@@ -92,6 +94,7 @@ export function normalizeWithMap(input: string): NormalizedText {
       if (RE_ALNUM.test(ch)) kind = 'char'
       else if (CODE_SEPARATORS.has(ch)) kind = 'sep'
       else if (INWORD_QUOTES.has(ch)) kind = 'quote'
+      else if (THOUSANDS.has(raw)) kind = 'thousands'
       else kind = 'space'
       pieces.push({ ch, kind, start, end })
     }
@@ -106,7 +109,11 @@ export function normalizeWithMap(input: string): NormalizedText {
   for (let k = 0; k < pieces.length; k++) {
     const p = pieces[k]!
     let emit: 'char' | 'space' | 'drop' = 'char'
+    const isDigit = (q: Piece | undefined): boolean => q !== undefined && q.ch >= '0' && q.ch <= '9'
     if (p.kind === 'space') emit = 'space'
+    else if (p.kind === 'thousands') {
+      emit = isDigit(pieces[k - 1]) && isDigit(pieces[k + 1]) ? 'drop' : 'space'
+    }
     else if (p.kind === 'quote') {
       emit = isAlnum(pieces[k - 1]) && isAlnum(pieces[k + 1]) ? 'drop' : 'space'
     } else if (p.kind === 'sep') {

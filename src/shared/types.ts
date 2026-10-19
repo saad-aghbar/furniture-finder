@@ -86,6 +86,15 @@ export interface ResultCell {
   highlights: Highlight[]
 }
 
+/** One option row of a product (e.g. "armchair · ₪ 1,100") shown inside the product's card. */
+export interface BlockOption {
+  rowId: number
+  rowNum: number
+  cells: ResultCell[]
+  /** This option itself matched the search (otherwise shown because it belongs to the product). */
+  matched: boolean
+}
+
 export interface SearchResult {
   rowId: number
   filePath: string
@@ -99,6 +108,8 @@ export interface SearchResult {
   score: number
   similar: boolean
   offline: boolean
+  /** Present when the row is one option of a multi-row product: all options of that product. */
+  block?: { start: number; options: BlockOption[] }
 }
 
 export interface SearchRequest {

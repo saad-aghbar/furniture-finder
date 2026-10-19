@@ -21,6 +21,8 @@ async function framed(file, out, { trim = true, pad = 56, width = 1100 } = {}) {
   await sharp(composed).resize({ width: Math.min(width, w) }).png().toFile(`${OUT}/${out}`)
 }
 
+await framed('17-product-8665.png', 'product-options.png')
+await framed('18-price-3850.png', 'search-price.png')
 await framed('05-search-he.png', 'search-hebrew.png')
 await framed('06-search-ar.png', 'search-arabic.png')
 await framed('14-rtl-ar-dark.png', 'dark-arabic.png')

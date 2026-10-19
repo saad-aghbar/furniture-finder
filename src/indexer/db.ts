@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3'
 import { NORMALIZER_VERSION } from '../shared/normalize'
 
-export const SCHEMA_VERSION = 3
+export const SCHEMA_VERSION = 4
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT);
@@ -43,8 +43,11 @@ CREATE TABLE IF NOT EXISTS rows(
   cells_json TEXT NOT NULL,
   display_title TEXT,
   title_norm TEXT,
-  norm_text TEXT NOT NULL
+  norm_text TEXT NOT NULL,
+  -- first row number of the product block this option row belongs to (NULL = single row)
+  block_start INTEGER
 );
+CREATE INDEX IF NOT EXISTS rows_block ON rows(sheet_id, block_start);
 CREATE INDEX IF NOT EXISTS rows_sheet ON rows(sheet_id);
 CREATE INDEX IF NOT EXISTS rows_title ON rows(title_norm);
 CREATE VIRTUAL TABLE IF NOT EXISTS rows_fts USING fts5(

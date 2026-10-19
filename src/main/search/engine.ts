@@ -1,6 +1,6 @@
 import type { Statement } from 'better-sqlite3'
 import { charLength, normalizeWithMap, type NormalizedText } from '../../shared/normalize'
-import type { Highlight, ResultCell, ScopeItem, SearchResult } from '../../shared/types'
+import type { BlockOption, Highlight, ResultCell, ScopeItem, SearchResult } from '../../shared/types'
 import type { DB } from '../../indexer/db'
 import { buildMatch, fuzzyDistance, likeEscape, parseQuery, shortGroups, type TermGroup } from './query'
 
@@ -42,7 +42,11 @@ interface Candidate {
   sheet_id: number
   row_num: number
   cells_json: string
+  block_start: number | null
 }
+
+/** Most options shown for one product card. */
+const MAX_BLOCK_ROWS = 60
 
 export const rowKey = (filePath: string, sheet: string, rowNum: number): string =>
   `${filePath}\u0000${sheet}\u0000${rowNum}`
@@ -192,8 +196,8 @@ export class SearchEngine {
     // We deliberately do not ORDER BY bm25: ranking every match of a common word costs
     // hundreds of ms on 500k rows; candidates are ranked in JS instead (see DECISIONS.md).
     let sql = match
-      ? 'SELECT r.id, r.sheet_id, r.row_num, r.cells_json FROM rows_fts f CROSS JOIN rows r ON r.id = f.rowid'
-      : 'SELECT r.id, r.sheet_id, r.row_num, r.cells_json FROM rows r'
+      ? 'SELECT r.id, r.sheet_id, r.row_num, r.cells_json, r.block_start FROM rows_fts f CROSS JOIN rows r ON r.id = f.rowid'
+      : 'SELECT r.id, r.sheet_id, r.row_num, r.cells_json, r.block_start FROM rows r'
     if (match) {
       where.push('rows_fts MATCH ?')
       params.push(match)
@@ -223,7 +227,7 @@ export class SearchEngine {
       // search word are among the candidates, wherever they are in the files.
       const seen = new Set(rows.map((r) => r.id))
       const prefixSql =
-        'SELECT r.id, r.sheet_id, r.row_num, r.cells_json FROM rows r WHERE r.title_norm >= ? AND r.title_norm < ?' +
+        'SELECT r.id, r.sheet_id, r.row_num, r.cells_json, r.block_start FROM rows r WHERE r.title_norm >= ? AND r.title_norm < ?' +
         (opts.sheetIds ? ` AND ${scopeSql}` : '') +
         ` LIMIT ${PREFIX_CANDIDATES}`
       const st = this.prepare(prefixSql)
@@ -241,15 +245,51 @@ export class SearchEngine {
       }
     }
 
-    const scored: SearchResult[] = []
+    const scored: { r: SearchResult; c: Candidate }[] = []
     for (const row of rows) {
       const meta = this.sheet(row.sheet_id)
       if (!meta) continue
       const r = scoreRow(row, meta, groups, opts, similar)
-      if (r) scored.push(r)
+      if (r) scored.push({ r, c: row })
     }
-    scored.sort((a, b) => b.score - a.score || a.rowId - b.rowId)
-    return { results: scored.slice(0, opts.limit), total: scored.length, capped, fuzzyUsed: false }
+    scored.sort((a, b) => b.r.score - a.r.score || a.r.rowId - b.r.rowId)
+
+    // One card per product: option rows of the same block collapse into the best-scoring one,
+    // which then carries every option of that product (matching ones flagged).
+    const cards: SearchResult[] = []
+    const byBlock = new Map<string, SearchResult>()
+    for (const { r, c } of scored) {
+      if (c.block_start === null) {
+        cards.push(r)
+        continue
+      }
+      const key = `${c.sheet_id}:${c.block_start}`
+      const card = byBlock.get(key)
+      if (card) {
+        const opt = card.block?.options.find((o) => o.rowId === r.rowId)
+        if (opt) opt.matched = true
+        continue
+      }
+      if (cards.length < opts.limit) {
+        const meta = this.sheet(c.sheet_id)!
+        r.block = { start: c.block_start, options: this.loadBlock(c.sheet_id, c.block_start, meta, groups, r.rowId) }
+      }
+      byBlock.set(key, r)
+      cards.push(r)
+    }
+    return { results: cards.slice(0, opts.limit), total: cards.length, capped, fuzzyUsed: false }
+  }
+
+  private loadBlock(sheetId: number, start: number, meta: SheetMeta, groups: TermGroup[], matchedId: number): BlockOption[] {
+    const rows = this.prepare(
+      `SELECT id, row_num, cells_json FROM rows WHERE sheet_id = ? AND block_start = ? ORDER BY row_num LIMIT ${MAX_BLOCK_ROWS}`
+    ).all(sheetId, start) as { id: number; row_num: number; cells_json: string }[]
+    return rows.map((row) => ({
+      rowId: row.id,
+      rowNum: row.row_num,
+      cells: highlightCells(JSON.parse(row.cells_json) as string[], meta, groups),
+      matched: row.id === matchedId
+    }))
   }
 }
 
@@ -376,6 +416,26 @@ function scoreRow(
     similar,
     offline: opts.offlineSources?.has(meta.sourcePath) ?? false
   }
+}
+
+/** All non-empty cells of a row with highlights for every query word (used for product options). */
+function highlightCells(raw: string[], meta: SheetMeta, groups: TermGroup[]): ResultCell[] {
+  const out: ResultCell[] = []
+  raw.forEach((value, col) => {
+    if (!value) return
+    const map = normalizeWithMap(value)
+    const compact = map.text.replace(/[-/.]/g, '')
+    const ranges: [number, number][] = []
+    for (const g of groups) for (const alt of g.alternatives) ranges.push(...(matchCell(map.text, compact, alt)?.ranges ?? []))
+    const highlights: Highlight[] = []
+    for (const [s, e] of mergeRanges(ranges)) {
+      const start = map.starts[s]
+      const end = map.ends[e - 1]
+      if (start !== undefined && end !== undefined && end > start) highlights.push({ start, end })
+    }
+    out.push({ col, header: meta.headers[col] ?? '', value, highlights })
+  })
+  return out
 }
 
 function mergeRanges(ranges: [number, number][]): [number, number][] {

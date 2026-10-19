@@ -409,3 +409,98 @@
 [data-theme='dark'] .linkButton {
   color: var(--accent);
 }
+
+/* ---------- product with several options ---------- */
+.badgeOptions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.chip[data-price='true'] .chipValue,
+.price {
+  color: var(--accent-strong);
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+[data-theme='dark'] .chip[data-price='true'] .chipValue,
+[data-theme='dark'] .price {
+  color: var(--accent);
+}
+.chip[data-price='true'] {
+  background: var(--accent-softer);
+}
+.optionsWrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.options {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-chip);
+}
+.options th {
+  padding: 8px 12px 6px;
+  text-align: start;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.options td {
+  padding: 8px 12px;
+  text-align: start;
+  border-bottom: 1px solid var(--border);
+  user-select: text;
+  overflow-wrap: anywhere;
+}
+.option:last-child td {
+  border-bottom: 0;
+}
+.option {
+  cursor: pointer;
+  transition: background-color 140ms var(--ease-out);
+}
+@media (hover: hover) {
+  .option:hover {
+    background: var(--accent-softer);
+  }
+}
+.option[data-matched='true'] {
+  background: color-mix(in srgb, var(--highlight) 45%, transparent);
+}
+.option[data-matched='true'] td:first-child {
+  font-weight: 700;
+}
+.optionCopy {
+  width: 40px;
+  padding: 4px 8px !important;
+  text-align: end !important;
+}
+.optionCopy button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  opacity: 0.55;
+  transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
+}
+.option:hover .optionCopy button,
+.optionCopy button:focus-visible {
+  opacity: 1;
+}
+@media (hover: hover) {
+  .optionCopy button:hover {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+}
+
+.rowLabel {
+  flex: none;
+}

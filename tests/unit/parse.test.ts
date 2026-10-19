@@ -121,7 +121,7 @@ describe('scanSource', () => {
     expect(names).toContain('suppliers/mixed/Mixed.xlsm')
     expect(names).not.toContain('~$קטלוג רהיטים.xlsx')
     expect(res.skipped).toBe(2) // notes.txt + logo.png
-    expect(res.files.length).toBe(14)
+    expect(res.files.length).toBe(15)
   })
   it('ignores lock files', () => {
     expect(isIndexable('/x/~$Book.xlsx')).toBe(false)

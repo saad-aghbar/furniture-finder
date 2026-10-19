@@ -80,6 +80,7 @@ export interface InvokeMap {
   'recent:add': { req: string; res: void }
   'recent:clear': { req: void; res: void }
   'copy:row': { req: { cells: CopyCell[]; withHeaders: boolean; key: string }; res: void }
+  'copy:rows': { req: { title: string; rows: CopyCell[][]; withHeaders: boolean; key: string }; res: void }
   'copy:text': { req: string; res: void }
   'excel:open': { req: { filePath: string; sheet: string; row: number }; res: 'selected' | 'opened' | 'failed' }
   'bar:layout': { req: void; res: BarLayout }
@@ -138,6 +139,7 @@ export const INVOKE_CHANNELS: readonly InvokeChannel[] = [
   'recent:add',
   'recent:clear',
   'copy:row',
+  'copy:rows',
   'copy:text',
   'excel:open',
   'bar:layout',

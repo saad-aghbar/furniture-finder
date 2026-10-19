@@ -41,7 +41,7 @@ test('onboarding: language → files → indexing → done', async () => {
   // (drag & drop and the folder dialog both end in sources:add – call it directly)
   await addSources(ctx.app, [FIXTURES])
   await expect(ob.getByText('catalogue', { exact: true })).toBeVisible()
-  await expect(ob.getByText(/Found 14 Excel files/)).toBeVisible()
+  await expect(ob.getByText(/Found 15 Excel files/)).toBeVisible()
   await expect(ob.getByText(/skipped 2 other files/)).toBeVisible()
   await shot(ob, '02-files')
 
@@ -95,6 +95,27 @@ test('search in Hebrew, Arabic, English and mixed', async () => {
   await shot(bar, '07-no-results')
 })
 
+test('price list: a model number shows the product with all its options', async () => {
+  await search('8665')
+  const card = bar.getByRole('option').filter({ hasText: '6 options' }).first()
+  await expect(card).toBeVisible()
+  await expect(card.getByRole('row')).toHaveCount(7) // header + 6 options
+  for (const opt of ['כורסא גוקר', '2+3', 'כורסא', 'דו מושבי', 'תלת מושבי']) await expect(card.getByRole('cell', { name: opt, exact: true })).toBeVisible()
+  await shot(bar, '17-product-8665')
+
+  await search('3850')
+  const priced = bar.getByRole('option').filter({ hasText: '6 options' }).first()
+  await expect(priced.locator('tr[data-matched="true"]')).toHaveCount(1)
+  await shot(bar, '18-price-3850')
+
+  // clicking one option copies just that option (with its product name)
+  await priced.getByRole('cell', { name: 'כורסא גוקר', exact: true }).click()
+  const clip = await readClipboard(ctx.app)
+  expect(clip.text).toContain('שם הדגם: סלון דגם מס\' 8665')
+  expect(clip.text).toContain('כמות: כורסא גוקר')
+  expect(clip.text).toContain('מחיר בלי בד: ₪ 880')
+})
+
 test('scope: pick one file, label + dot, persists', async () => {
   await search('ספה')
   const before = await bar.getByRole('option').count()
@@ -107,7 +128,11 @@ test('scope: pick one file, label + dot, persists', async () => {
   const scopeButton = bar.locator('button[aria-haspopup="dialog"]')
   await expect(scopeButton).toHaveText(/קטלוג רהיטים\.xlsx/)
   await search('ספה')
-  await expect.poll(() => bar.getByRole('option').count()).toBeLessThan(before)
+  // every result now comes from the chosen file
+  await expect.poll(() => bar.getByRole('option').count()).toBeGreaterThan(0)
+  const fromOtherFiles = bar.getByRole('option').filter({ hasNotText: 'קטלוג רהיטים.xlsx' })
+  await expect(fromOtherFiles).toHaveCount(0)
+  expect(before).toBeGreaterThan(0)
   const scope = await bar.evaluate(() => window.ff.invoke('settings:get').then((s) => s.scope))
   expect(scope).toEqual([{ type: 'file', path: join(FIXTURES, 'קטלוג רהיטים.xlsx') }])
   await shot(bar, '09-scoped')

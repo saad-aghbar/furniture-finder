@@ -97,6 +97,17 @@ describe('codes', () => {
   })
 })
 
+describe('numbers', () => {
+  it('drops thousands separators so prices match however they are typed', () => {
+    expect(normalize('₪ 3,850')).toBe('3850')
+    expect(normalize('1,234,567.50')).toBe('1234567.50')
+    expect(normalize('٣٬٨٥٠')).toBe('3850')
+  })
+  it('keeps a comma between words as a separator', () => {
+    expect(normalize('sofa,bed 3, 4')).toBe('sofa bed 3 4')
+  })
+})
+
 describe('offset map', () => {
   it('maps normalised ranges back to the original text', () => {
     const src = 'כּוּרְסָה נוֹחָה'

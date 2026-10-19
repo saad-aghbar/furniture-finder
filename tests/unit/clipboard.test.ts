@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatRow, formatTsv } from '../../src/main/clipboard-format'
+import { formatRow, formatRows, formatTsv } from '../../src/main/clipboard-format'
 
 const cells = [
   { header: 'קוד', value: 'A-1203' },
@@ -27,6 +27,17 @@ describe('clipboard formatting', () => {
   })
   it('omits empty headers in text', () => {
     expect(formatRow([{ header: '', value: 'Sofa' }], false).text).toBe('Sofa')
+  })
+  it('copies a whole product: table rows for Excel, readable lines for WhatsApp', () => {
+    const name = { header: 'שם הדגם', value: 'סלון 8665' }
+    const rows = [
+      [name, { header: 'כמות', value: 'כורסא' }, { header: 'מחיר', value: '₪ 1,100' }],
+      [name, { header: 'כמות', value: '2+3' }, { header: 'מחיר', value: '₪ 3,850' }]
+    ]
+    const { text, html } = formatRows('סלון 8665', rows, true)
+    expect(text).toBe('סלון 8665\n• כמות: כורסא · מחיר: ₪ 1,100\n• כמות: 2+3 · מחיר: ₪ 3,850')
+    expect(html).toContain('<tr><th>שם הדגם</th><th>כמות</th><th>מחיר</th></tr>')
+    expect(html).toContain('<tr><td>סלון 8665</td><td>2+3</td><td>₪ 3,850</td></tr>')
   })
   it('builds TSV', () => {
     expect(formatTsv(cells, true)).toBe('קוד\tשם מוצר\tמחיר\nA-1203\tכורסה מסתובבת\t2,490.00 ₪')
