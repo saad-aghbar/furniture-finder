@@ -25,17 +25,17 @@
 - [x] Tray, global hotkey, single instance, auto-launch, electron-store settings, logging
 
 ## Phase 3 — UI (load design + motion skills first)
-- [ ] Theme tokens, fonts bundled, i18n (ar/he/en) with RTL, motion tokens
-- [ ] Onboarding flow (4 steps) with drag-drop and indexing progress
-- [ ] Search bar + results panel + result card + copy (TSV + HTML + text) + toasts
-- [ ] Scope picker (tree, multi-select, sheets, filter box)
-- [ ] ⋯ menu, move mode, snap positions, hide/show
-- [ ] Settings window (all tabs)
-- [ ] Open-in-Excel helper (PowerShell COM, graceful fallback)
-- [ ] All animations per DESIGN.md table + reduced-motion variants
+- [x] Theme tokens, fonts bundled, i18n (ar/he/en) with RTL, motion tokens
+- [x] Onboarding flow (4 steps) with drag-drop and indexing progress
+- [x] Search bar + results panel + result card + copy (TSV + HTML + text) + toasts
+- [x] Scope picker (tree, multi-select, sheets, filter box)
+- [x] ⋯ menu, move mode, snap positions, hide/show
+- [x] Settings window (all tabs)
+- [x] Open-in-Excel helper (PowerShell COM, graceful fallback)
+- [x] All animations per DESIGN.md table + reduced-motion variants
 
 ## Phase 4 — Packaging & release
-- [ ] App icon (SVG → ico/png)
+- [x] App icon (SVG → ico/png)
 - [ ] electron-builder config, release workflow on windows-latest
 - [ ] Auto-updater + update pill
 - [ ] README in 3 languages; screenshots/GIF

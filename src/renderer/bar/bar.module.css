@@ -1,0 +1,588 @@
+/* ---------- stage: the transparent window ---------- */
+.stage {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.stage [data-hit] {
+  pointer-events: auto;
+}
+
+.barSlot {
+  position: absolute;
+}
+
+/* ---------- the pill ---------- */
+.bar {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.barInner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: 100%;
+  padding-inline: 10px 8px;
+  transition: opacity 200ms var(--ease-out);
+}
+.barBg {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-bar);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-bar);
+  transition: box-shadow 200ms var(--ease-out);
+  transform-origin: 50% 50%;
+}
+.focused .barBg {
+  box-shadow: var(--shadow-bar), 0 0 0 3px var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+.lifted .barBg {
+  box-shadow: var(--shadow-lift), 0 0 0 3px var(--accent-soft);
+}
+
+.iconButton {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--accent);
+  cursor: grab;
+  touch-action: none;
+}
+.iconButton:active {
+  cursor: grabbing;
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.inputWrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  font-size: var(--fs-input);
+  font-weight: 450;
+  letter-spacing: -0.005em;
+  padding: 0;
+  text-align: start;
+  user-select: text;
+}
+.input:focus-visible {
+  outline: none; /* the pill draws its own focus ring */
+}
+.placeholder {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  translate: 0 -50%;
+  font-size: var(--fs-input);
+  color: var(--text-muted);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.clearButton {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--text-muted);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+@media (hover: hover) {
+  .clearButton:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+}
+
+.scopeButton {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  max-width: 200px;
+  padding-inline: 14px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: calc(15px * var(--font-scale));
+  font-weight: 600;
+  transition: background-color 150ms ease;
+}
+[data-theme='dark'] .scopeButton {
+  color: var(--accent);
+}
+@media (hover: hover) {
+  .scopeButton:hover {
+    background: color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+}
+.scopeButton[aria-expanded='true'] {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.scopeLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scopeDot {
+  position: absolute;
+  top: 3px;
+  inset-inline-end: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.chevron {
+  flex: none;
+  transition: transform 200ms var(--ease-out);
+}
+[aria-expanded='true'] > .chevron {
+  transform: rotate(180deg);
+}
+
+.moreButton {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--text);
+  transition: background-color 150ms ease;
+}
+@media (hover: hover) {
+  .moreButton:hover {
+    background: var(--surface-2);
+  }
+}
+.moreButton[aria-expanded='true'] {
+  background: var(--surface-3);
+}
+
+.edge {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 8px;
+  cursor: ew-resize;
+  touch-action: none;
+  z-index: 2;
+}
+.edgeLeft {
+  left: -3px;
+}
+.edgeRight {
+  right: -3px;
+}
+
+/* hairline progress along the bottom edge while indexing */
+.progress {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--accent-softer);
+}
+.progressFill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: left center;
+  border-radius: 3px;
+}
+[dir='rtl'] .progressFill {
+  transform-origin: right center;
+}
+.progressShimmer {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+[data-reduce-motion='true'] .progressShimmer {
+  animation: none;
+  width: 100%;
+  opacity: 0.5;
+}
+
+/* move mode: marching dashed outline */
+.moveOutline {
+  position: absolute;
+  inset: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
+  pointer-events: none;
+  overflow: visible;
+}
+.moveOutline rect {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 9 7;
+  animation: march 0.9s linear infinite;
+}
+@keyframes march {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+[data-reduce-motion='true'] .moveOutline rect {
+  animation: none;
+}
+.moving {
+  cursor: move;
+}
+.moving * {
+  cursor: move !important;
+}
+
+/* update pill on the bar's bottom edge */
+.updatePill {
+  position: absolute;
+  inset-inline-end: 64px;
+  bottom: -14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding-inline: 12px;
+  border-radius: 999px;
+  background: var(--success);
+  color: #fff;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  box-shadow: var(--shadow-card);
+  z-index: 3;
+}
+[data-theme='dark'] .updatePill {
+  color: #10241a;
+}
+
+/* ---------- toast / hint under (or above) the bar ---------- */
+.toast {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.toastInner {
+  max-width: 92%;
+  padding: 10px 16px;
+  border-radius: var(--radius-menu);
+  background: var(--text);
+  color: var(--surface);
+  font-size: var(--fs-chip);
+  font-weight: 500;
+  box-shadow: var(--shadow-menu);
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* ---------- menus (scope + ⋯) ---------- */
+.menu {
+  position: absolute;
+  inset-inline-end: 0;
+  z-index: 20;
+  border-radius: var(--radius-menu);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-menu);
+  padding: 6px;
+  color: var(--text);
+}
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: var(--fs-chip);
+  font-weight: 500;
+  text-align: start;
+  transition: background-color 120ms ease;
+}
+.menuItem svg {
+  flex: none;
+  color: var(--text-muted);
+}
+.menuItem:focus-visible {
+  outline: none;
+  background: var(--accent-soft);
+}
+@media (hover: hover) {
+  .menuItem:hover {
+    background: var(--accent-soft);
+  }
+}
+.menuDanger svg {
+  color: var(--danger);
+}
+.menuSep {
+  height: 1px;
+  margin: 6px 8px;
+  background: var(--border);
+}
+.menuLabel {
+  padding: 6px 12px 4px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.snapRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 2px 6px 6px;
+}
+.snapButton {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  transition: background-color 120ms ease;
+}
+.snapButton:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 0;
+}
+@media (hover: hover) {
+  .snapButton:hover {
+    background: var(--accent-soft);
+  }
+}
+.snapGlyph {
+  position: relative;
+  width: 34px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1.5px solid var(--text-muted);
+}
+.snapGlyph::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.snapGlyph[data-pos='top-center']::after {
+  top: 3px;
+  left: calc(50% - 7px);
+}
+.snapGlyph[data-pos='top-left']::after {
+  top: 3px;
+  left: 3px;
+}
+.snapGlyph[data-pos='top-right']::after {
+  top: 3px;
+  right: 3px;
+}
+.snapGlyph[data-pos='bottom-center']::after {
+  bottom: 3px;
+  left: calc(50% - 7px);
+}
+
+/* scope tree */
+.scopeMenu {
+  width: min(400px, 100%);
+  display: flex;
+  flex-direction: column;
+}
+.scopeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 8px;
+  font-weight: 600;
+  font-size: var(--fs-chip);
+}
+.countBadge {
+  min-width: 26px;
+  height: 26px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+.filter {
+  margin: 0 4px 6px;
+  height: 42px;
+  padding-inline: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  font-size: var(--fs-chip);
+  user-select: text;
+}
+.filter:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.tree {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-inline-end: 2px;
+}
+.treeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding-inline: 6px 10px;
+  border-radius: 10px;
+  font-size: var(--fs-chip);
+  transition: background-color 120ms ease;
+}
+.treeRow:focus-within {
+  background: var(--accent-softer);
+}
+@media (hover: hover) {
+  .treeRow:hover {
+    background: var(--accent-softer);
+  }
+}
+.treeToggle {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+.treeToggle svg {
+  transition: transform 200ms var(--ease-out);
+}
+.treeToggle[aria-expanded='true'] svg {
+  transform: rotate(90deg);
+}
+[dir='rtl'] .treeToggle[aria-expanded='false'] svg {
+  transform: rotate(180deg);
+}
+.treeSpacer {
+  flex: none;
+  width: 28px;
+}
+.check {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  cursor: pointer;
+  text-align: start;
+}
+.checkBox {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border-strong);
+  display: grid;
+  place-items: center;
+  color: var(--accent-contrast);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+.check[aria-checked='true'] .checkBox {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.check:focus-visible {
+  outline: none;
+}
+.check:focus-visible .checkBox {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-color: var(--accent);
+}
+.treeName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.treeMeta {
+  margin-inline-start: auto;
+  flex: none;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.treeIcon {
+  flex: none;
+  color: var(--text-muted);
+}
+.treeChildren {
+  overflow: hidden;
+  padding-inline-start: 22px;
+}
+.offlineTag {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.scopeEmpty {
+  padding: 16px;
+  color: var(--text-muted);
+  text-align: center;
+}

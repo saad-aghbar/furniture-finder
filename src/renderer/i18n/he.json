@@ -7,7 +7,6 @@
   "common.remove": "הסרה",
   "common.minimize": "מזעור",
   "common.loading": "טוען…",
-
   "onboarding.welcomeTitle": "ברוכים הבאים למאתר הרהיטים",
   "onboarding.langTitle": "באיזו שפה נוח לך?",
   "onboarding.langHint": "אפשר לשנות את זה אחר כך בהגדרות.",
@@ -39,7 +38,7 @@
   "onboarding.tip2Title": "לוחצים על תוצאה כדי להעתיק",
   "onboarding.tip2Body": "כל השורה מועתקת. אפשר להדביק אותה באקסל או בוואטסאפ.",
   "onboarding.tip3Title": "בעזרת ⋯ מזיזים את הסרגל",
-  "onboarding.tip3Body": "אפשר להציב את סרגל החיפוש בכל מקום במסך.",
+  "onboarding.tip3Body": "לחצו לחיצה ארוכה על ⋯ וגררו את הסרגל לכל מקום במסך.",
   "onboarding.finish": "להתחיל לחפש",
   "onboarding.manageTitle": "הקבצים שלך",
   "onboarding.manageBody": "בתיקיות ובקבצים האלה מתבצע החיפוש. שינויים נקלטים לבד.",
@@ -47,13 +46,11 @@
   "onboarding.offline": "לא מחובר",
   "onboarding.offlineHint": "ממשיכים לחפש בעותק האחרון עד שהכונן יחובר שוב.",
   "onboarding.step": "שלב {n} מתוך {total}",
-
   "errors.password": "לקובץ הזה יש סיסמה. הסירו את הסיסמה באקסל, או וותרו על הקובץ.",
   "errors.corrupt": "נראה שהקובץ פגום, או שהוא לא קובץ אקסל אמיתי.",
   "errors.unreadable": "לא הצלחנו לפתוח את הקובץ. ייתכן שהוא הועבר או חסום.",
   "errors.empty": "הקובץ ריק.",
   "errors.tooBig": "הקובץ גדול מדי לקריאה.",
-
   "bar.placeholder": "חיפוש רהיטים…",
   "bar.searchLabel": "חיפוש בקובצי האקסל שלך",
   "bar.scopeAll": "כל הקבצים",
@@ -64,6 +61,7 @@
   "bar.scopeRows": "{count} שורות",
   "bar.scopeNone": "אין קבצים מתאימים.",
   "bar.menu": "אפשרויות נוספות",
+  "bar.menuHint": "אפשרויות נוספות – לחיצה ארוכה כדי להזיז את הסרגל",
   "bar.moveBar": "הזזת הסרגל",
   "bar.snapTitle": "מיקומים מהירים",
   "bar.snap.top-center": "למעלה באמצע",
@@ -107,7 +105,6 @@
   "bar.dragHandle": "גררו כדי להזיז את הסרגל",
   "bar.resizeHandle": "גררו כדי לשנות את הרוחב",
   "bar.clear": "ניקוי החיפוש",
-
   "settings.title": "הגדרות",
   "settings.tab.general": "כללי",
   "settings.tab.search": "חיפוש",
@@ -157,14 +154,12 @@
   "settings.github": "דף הפרויקט",
   "settings.logs": "פתיחת תיקיית היומנים",
   "settings.privacy": "הקבצים שלך לא יוצאים מהמחשב. החיפוש עובד גם בלי אינטרנט.",
-
   "tray.tooltip": "מאתר הרהיטים",
   "tray.show": "הצגת סרגל החיפוש",
   "tray.hide": "הסתרת סרגל החיפוש",
   "tray.manage": "ניהול קבצים",
   "tray.settings": "הגדרות",
   "tray.quit": "יציאה",
-
   "dialog.addFolder": "בחירת תיקייה עם קובצי אקסל",
   "dialog.addFiles": "בחירת קובצי אקסל",
   "dialog.excelFilter": "קובצי אקסל"

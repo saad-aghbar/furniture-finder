@@ -7,7 +7,6 @@
   "common.remove": "Remove",
   "common.minimize": "Minimise",
   "common.loading": "Loading…",
-
   "onboarding.welcomeTitle": "Welcome to Furniture Finder",
   "onboarding.langTitle": "Which language do you prefer?",
   "onboarding.langHint": "You can change this later in Settings.",
@@ -39,7 +38,7 @@
   "onboarding.tip2Title": "Click a result to copy it",
   "onboarding.tip2Body": "The whole row is copied. Paste it into Excel or WhatsApp.",
   "onboarding.tip3Title": "Use ⋯ to move the bar",
-  "onboarding.tip3Body": "Put the search bar anywhere on your screen.",
+  "onboarding.tip3Body": "Press and hold ⋯ and drag the bar anywhere on your screen.",
   "onboarding.finish": "Start searching",
   "onboarding.manageTitle": "Your files",
   "onboarding.manageBody": "These folders and files are searched. Changes are noticed by themselves.",
@@ -47,13 +46,11 @@
   "onboarding.offline": "Not connected",
   "onboarding.offlineHint": "We keep searching the last copy until it is connected again.",
   "onboarding.step": "Step {n} of {total}",
-
   "errors.password": "This file has a password. Remove the password in Excel, or leave this file out.",
   "errors.corrupt": "This file seems damaged, or it is not a real Excel file.",
   "errors.unreadable": "We could not open this file. It may have been moved or is blocked.",
   "errors.empty": "This file is empty.",
   "errors.tooBig": "This file is too big to read.",
-
   "bar.placeholder": "Search furniture…",
   "bar.searchLabel": "Search in your Excel files",
   "bar.scopeAll": "All files",
@@ -64,6 +61,7 @@
   "bar.scopeRows": "{count} rows",
   "bar.scopeNone": "No files match.",
   "bar.menu": "More options",
+  "bar.menuHint": "More options – press and hold to move the bar",
   "bar.moveBar": "Move bar",
   "bar.snapTitle": "Quick positions",
   "bar.snap.top-center": "Top centre",
@@ -107,7 +105,6 @@
   "bar.dragHandle": "Drag to move the bar",
   "bar.resizeHandle": "Drag to change the width",
   "bar.clear": "Clear search",
-
   "settings.title": "Settings",
   "settings.tab.general": "General",
   "settings.tab.search": "Search",
@@ -157,14 +154,12 @@
   "settings.github": "Project page",
   "settings.logs": "Open logs folder",
   "settings.privacy": "Your files never leave this computer. Search works without internet.",
-
   "tray.tooltip": "Furniture Finder",
   "tray.show": "Show search bar",
   "tray.hide": "Hide search bar",
   "tray.manage": "Manage files",
   "tray.settings": "Settings",
   "tray.quit": "Quit",
-
   "dialog.addFolder": "Choose a folder with Excel files",
   "dialog.addFiles": "Choose Excel files",
   "dialog.excelFilter": "Excel files"

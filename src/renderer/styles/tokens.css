@@ -1,0 +1,84 @@
+/* Design tokens – docs/DESIGN.md. Light on :root, dark under [data-theme='dark']. */
+:root {
+  --bg-glass: rgba(250, 248, 244, 0.9);
+  --surface: #fffdf9;
+  --surface-2: #f4efe7;
+  --surface-3: #ebe3d6;
+  --text: #1f1b16;
+  --text-muted: #6e655a;
+  --accent: #8a5a2b;
+  --accent-strong: #6f4620;
+  --accent-contrast: #fffdf9;
+  --accent-soft: rgba(138, 90, 43, 0.12);
+  --accent-softer: rgba(138, 90, 43, 0.07);
+  --success: #2f7d4f;
+  --success-soft: rgba(47, 125, 79, 0.12);
+  --danger: #b3412e;
+  --danger-soft: rgba(179, 65, 46, 0.1);
+  --highlight: #ffe3a3;
+  --border: rgba(31, 27, 22, 0.1);
+  --border-strong: rgba(31, 27, 22, 0.18);
+  --shadow-bar: 0 10px 30px rgba(31, 27, 22, 0.18), 0 2px 6px rgba(31, 27, 22, 0.1);
+  --shadow-lift: 0 16px 40px rgba(31, 27, 22, 0.24), 0 3px 8px rgba(31, 27, 22, 0.12);
+  --shadow-card: 0 4px 14px rgba(31, 27, 22, 0.08), 0 1px 3px rgba(31, 27, 22, 0.06);
+  --shadow-menu: 0 18px 44px rgba(31, 27, 22, 0.2), 0 3px 10px rgba(31, 27, 22, 0.1);
+  --scrollbar: rgba(110, 101, 90, 0.35);
+
+  --radius-bar: 28px;
+  --radius-card: 16px;
+  --radius-menu: 14px;
+  --radius-button: 12px;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+
+  --font-scale: 1;
+  --fs-input: calc(20px * var(--font-scale));
+  --fs-title: calc(18px * var(--font-scale));
+  --fs-chip: calc(15px * var(--font-scale));
+  --fs-body: calc(16px * var(--font-scale));
+  --fs-small: calc(13px * var(--font-scale));
+  --fs-h1: calc(28px * var(--font-scale));
+  --fs-h2: calc(21px * var(--font-scale));
+
+  --font: 'Inter Variable', 'IBM Plex Sans Arabic', 'Rubik Variable', system-ui, sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg-glass: rgba(28, 26, 23, 0.9);
+  --surface: #24211d;
+  --surface-2: #2e2a25;
+  --surface-3: #39342e;
+  --text: #f3eee6;
+  --text-muted: #a89d8f;
+  --accent: #d2a06a;
+  --accent-strong: #e2b582;
+  --accent-contrast: #1f1b16;
+  --accent-soft: rgba(210, 160, 106, 0.16);
+  --accent-softer: rgba(210, 160, 106, 0.08);
+  --success: #5cc48a;
+  --success-soft: rgba(92, 196, 138, 0.14);
+  --danger: #f0806c;
+  --danger-soft: rgba(240, 128, 108, 0.12);
+  --highlight: rgba(210, 160, 106, 0.35);
+  --border: rgba(243, 238, 230, 0.1);
+  --border-strong: rgba(243, 238, 230, 0.18);
+  --shadow-bar: 0 10px 30px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lift: 0 16px 40px rgba(0, 0, 0, 0.55), 0 3px 8px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-menu: 0 18px 44px rgba(0, 0, 0, 0.5), 0 3px 10px rgba(0, 0, 0, 0.3);
+  --scrollbar: rgba(168, 157, 143, 0.35);
+  color-scheme: dark;
+}
+
+[data-text-size='normal'] { --font-scale: 0.9; }
+[data-text-size='large'] { --font-scale: 1; }
+[data-text-size='xlarge'] { --font-scale: 1.2; }

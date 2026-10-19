@@ -7,7 +7,6 @@
   "common.remove": "إزالة",
   "common.minimize": "تصغير",
   "common.loading": "جارٍ التحميل…",
-
   "onboarding.welcomeTitle": "أهلاً بك في باحث الأثاث",
   "onboarding.langTitle": "ما اللغة التي تفضّلها؟",
   "onboarding.langHint": "يمكنك تغييرها لاحقاً من الإعدادات.",
@@ -39,7 +38,7 @@
   "onboarding.tip2Title": "انقر على نتيجة لنسخها",
   "onboarding.tip2Body": "يُنسخ الصف كاملاً. الصقه في إكسل أو واتساب.",
   "onboarding.tip3Title": "استخدم ⋯ لتحريك الشريط",
-  "onboarding.tip3Body": "ضع شريط البحث في أي مكان على الشاشة.",
+  "onboarding.tip3Body": "اضغط مطولاً على ⋯ واسحب الشريط إلى أي مكان على الشاشة.",
   "onboarding.finish": "ابدأ البحث",
   "onboarding.manageTitle": "ملفاتك",
   "onboarding.manageBody": "يتم البحث في هذه المجلدات والملفات. التغييرات تُلتقط تلقائياً.",
@@ -47,13 +46,11 @@
   "onboarding.offline": "غير متصل",
   "onboarding.offlineHint": "نواصل البحث في آخر نسخة حتى يعود الاتصال.",
   "onboarding.step": "الخطوة {n} من {total}",
-
   "errors.password": "هذا الملف محمي بكلمة مرور. أزل كلمة المرور في إكسل، أو اترك هذا الملف.",
   "errors.corrupt": "يبدو أن الملف تالف، أو أنه ليس ملف إكسل حقيقياً.",
   "errors.unreadable": "تعذّر فتح هذا الملف. ربما نُقل أو أنه محظور.",
   "errors.empty": "هذا الملف فارغ.",
   "errors.tooBig": "هذا الملف كبير جداً للقراءة.",
-
   "bar.placeholder": "ابحث عن أثاث…",
   "bar.searchLabel": "البحث في ملفات الإكسل",
   "bar.scopeAll": "كل الملفات",
@@ -64,6 +61,7 @@
   "bar.scopeRows": "{count} صفوف",
   "bar.scopeNone": "لا توجد ملفات مطابقة.",
   "bar.menu": "خيارات أخرى",
+  "bar.menuHint": "خيارات أخرى – اضغط مطولاً لتحريك الشريط",
   "bar.moveBar": "تحريك الشريط",
   "bar.snapTitle": "مواضع سريعة",
   "bar.snap.top-center": "أعلى الوسط",
@@ -107,7 +105,6 @@
   "bar.dragHandle": "اسحب لتحريك الشريط",
   "bar.resizeHandle": "اسحب لتغيير العرض",
   "bar.clear": "مسح البحث",
-
   "settings.title": "الإعدادات",
   "settings.tab.general": "عام",
   "settings.tab.search": "البحث",
@@ -157,14 +154,12 @@
   "settings.github": "صفحة المشروع",
   "settings.logs": "فتح مجلد السجلات",
   "settings.privacy": "ملفاتك لا تغادر هذا الحاسوب. البحث يعمل دون إنترنت.",
-
   "tray.tooltip": "باحث الأثاث",
   "tray.show": "إظهار شريط البحث",
   "tray.hide": "إخفاء شريط البحث",
   "tray.manage": "إدارة الملفات",
   "tray.settings": "الإعدادات",
   "tray.quit": "خروج",
-
   "dialog.addFolder": "اختر مجلداً فيه ملفات إكسل",
   "dialog.addFiles": "اختر ملفات إكسل",
   "dialog.excelFilter": "ملفات إكسل"

@@ -17,7 +17,7 @@
     "start": "electron-vite preview",
     "test": "node scripts/run-electron-node.mjs ./node_modules/vitest/vitest.mjs run",
     "test:watch": "node scripts/run-electron-node.mjs ./node_modules/vitest/vitest.mjs",
-    "test:e2e": "playwright test",
+    "test:e2e": "electron-vite build && playwright test",
     "lint": "eslint . && tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
     "format": "prettier --write .",

@@ -65,3 +65,22 @@ Deviations from, or interpretations of, the spec. Newest at the bottom of each s
   ("Header: value" lines) and `text/html` (a one-row table Excel pastes as cells). A separate TSV
   flavour is not needed because Excel prefers the HTML table.
 - Numbers in UI messages use Western digits in all three languages (the data uses them too).
+
+## UI
+- **Results panel height** is animated from the measured content height (one element, capped at the
+  panel maximum) instead of Motion `layout` on the scroll container: scaling a scrolled list with
+  sticky headers distorted the cards. Cards themselves use `layout="position"`.
+- **Focus "width +16px"** is done by scaling only the glass background layer (`scaleX`), so the text
+  never stretches and nothing re-lays-out per frame.
+- **Menus use a solid surface**, not glass: a translucent menu over the results list was hard to read.
+- **Selected options** (settings segmented controls) are a solid walnut pill with light text – the
+  default "white pill on beige" was too subtle for older eyes.
+- File names and paths are wrapped in `<bdi dir="ltr">`; otherwise a Hebrew/Arabic name followed by
+  `.xlsx` is reordered by the bidi algorithm ("xlsx.קטלוג").
+- Cards show three always-reachable actions (copy row, copy with titles, open in Excel); they fade in
+  on hover / keyboard selection, and clicking anywhere on the card still copies the row.
+- Hiding the bar first shows the "press Ctrl+Shift+Space…" note for ~2.5 s, then animates out.
+- Renderer views are code-split (`?view=bar|onboarding|settings|overlay`) from one HTML entry.
+- **Press and hold ⋯ to move the bar** (owner request): holding the ⋯ button for 350 ms, or starting
+  to drag it, picks the bar up and it follows the pointer; a quick click still opens the menu. The
+  onboarding tip and the button tooltip say so in all three languages.

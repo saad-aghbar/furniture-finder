@@ -1,0 +1,411 @@
+.panel {
+  position: absolute;
+  display: block;
+  border-radius: 20px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-menu);
+  overflow: hidden;
+  will-change: clip-path;
+}
+
+.header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 44px;
+  padding: 6px 8px 6px 18px;
+  padding-inline: 18px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.count {
+  font-weight: 600;
+  color: var(--text);
+}
+.reading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-strong);
+  font-weight: 500;
+}
+[data-theme='dark'] .reading {
+  color: var(--accent);
+}
+.closeButton {
+  margin-inline-start: auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+@media (hover: hover) {
+  .closeButton:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 8px 12px;
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 16px), transparent 100%);
+}
+
+.group + .group {
+  margin-top: 6px;
+}
+.groupHeader {
+  position: sticky;
+  top: -8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -8px -8px 6px;
+  padding: 12px 18px 8px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+}
+.groupHeader svg {
+  color: var(--accent);
+  flex: none;
+}
+.groupName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.groupCount {
+  margin-inline-start: auto;
+  font-weight: 500;
+}
+
+/* ---------- card ---------- */
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px 12px;
+}
+.card {
+  position: relative;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(31, 27, 22, 0.04);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    translate 160ms var(--ease-out);
+}
+.card + .card {
+  margin-top: 8px;
+}
+@media (hover: hover) {
+  .card:hover {
+    background: var(--surface-2);
+    box-shadow: var(--shadow-card);
+    translate: 0 -1px;
+  }
+}
+.card[data-selected='true'] {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  box-shadow: inset 2px 0 0 var(--accent), var(--shadow-card);
+  background: var(--surface-2);
+}
+[dir='rtl'] .card[data-selected='true'] {
+  box-shadow: inset -2px 0 0 var(--accent), var(--shadow-card);
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.title {
+  font-size: var(--fs-title);
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  user-select: text;
+  overflow-wrap: anywhere;
+}
+.badge {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 2px 9px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  white-space: nowrap;
+}
+[data-theme='dark'] .badge {
+  color: var(--accent);
+}
+.badgeOffline {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 5px 11px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  font-size: var(--fs-chip);
+  line-height: 1.35;
+  text-align: start;
+  transition: background-color 160ms var(--ease-out), border-color 160ms var(--ease-out);
+}
+.card[data-selected='true'] .chip,
+.card:hover .chip {
+  background: var(--surface);
+}
+@media (hover: hover) {
+  .chip:hover {
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+}
+.chip[data-flash='true'] {
+  background: var(--accent-soft) !important;
+  border-color: var(--accent);
+}
+.chipHeader {
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.chipValue {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+.moreChip {
+  color: var(--accent-strong);
+  font-weight: 600;
+  background: transparent;
+  border: 1px dashed color-mix(in srgb, var(--accent) 40%, transparent);
+}
+[data-theme='dark'] .moreChip {
+  color: var(--accent);
+}
+
+.sourceRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.sourcePath {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.sourcePath > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sep {
+  opacity: 0.6;
+  flex: none;
+}
+.actions {
+  margin-inline-start: auto;
+  display: flex;
+  gap: 4px;
+  flex: none;
+  opacity: 0;
+  transition: opacity 160ms var(--ease-out);
+}
+.card:hover .actions,
+.card[data-selected='true'] .actions,
+.card:focus-within .actions {
+  opacity: 1;
+}
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding-inline: 10px;
+  border-radius: 9px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface-3);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+@media (hover: hover) {
+  .action:hover {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+}
+
+/* copied confirmation pill */
+.copied {
+  position: absolute;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding-inline: 10px 14px;
+  border-radius: 999px;
+  background: var(--success);
+  color: #fff;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(31, 27, 22, 0.22);
+  pointer-events: none;
+  white-space: nowrap;
+  translate: -50% -130%;
+}
+[data-theme='dark'] .copied {
+  color: #0f2418;
+}
+.copiedError {
+  background: var(--danger);
+}
+
+/* empty / edge states */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 24px 30px;
+  text-align: center;
+}
+.emptyIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.emptyTitle {
+  font-size: var(--fs-title);
+  font-weight: 650;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.emptyBody {
+  color: var(--text-muted);
+  text-wrap: balance;
+}
+.primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding-inline: 18px;
+  border-radius: var(--radius-button);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 600;
+  transition: background-color 150ms ease, transform 120ms var(--ease-out);
+}
+.primary:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) {
+  .primary:hover {
+    background: var(--accent-strong);
+  }
+}
+.showMore {
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+}
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding-inline: 16px;
+  border-radius: var(--radius-button);
+  background: var(--surface-2);
+  font-weight: 600;
+  transition: background-color 150ms ease;
+}
+@media (hover: hover) {
+  .secondary:hover {
+    background: var(--surface-3);
+  }
+}
+
+.recent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px 16px;
+}
+.recentTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 0;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.recentChip {
+  height: 38px;
+  padding-inline: 14px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: var(--fs-chip);
+  transition: background-color 120ms ease;
+}
+@media (hover: hover) {
+  .recentChip:hover {
+    background: var(--accent-soft);
+  }
+}
+.linkButton {
+  color: var(--accent-strong);
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+[data-theme='dark'] .linkButton {
+  color: var(--accent);
+}

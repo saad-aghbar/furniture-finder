@@ -424,6 +424,10 @@ export class BarWindow {
     this.win = null
   }
 
+  isDragging(): boolean {
+    return this.drag !== null
+  }
+
   /** Current bar rectangle in screen coordinates (used by e2e tests). */
   bounds(): Rectangle {
     return this.barRect()
