@@ -63,6 +63,7 @@ export class Indexer {
       ),
       touchFile: db.prepare('UPDATE files SET size = ?, mtime = ? WHERE id = ?'),
       deleteFile: db.prepare('DELETE FROM files WHERE id = ?'),
+      markIndexing: db.prepare("UPDATE files SET status = 'indexing' WHERE id = ?"),
       deleteSheets: db.prepare('DELETE FROM sheets WHERE file_id = ?'),
       insertSheet: db.prepare(
         `INSERT INTO sheets(file_id, name, idx, hidden, header_row, headers_json, name_col)
@@ -112,6 +113,15 @@ export class Indexer {
         if (row) this.stmts.deleteFile.run(row.id)
       }
     })()
+  }
+
+  /** After a crash: files left in 'indexing' state crashed the parser – report them as damaged. */
+  recoverCrashed(): number {
+    return this.db.prepare("UPDATE files SET status = 'error', error = 'corrupt' WHERE status = 'indexing'").run().changes
+  }
+
+  hasSource(path: string): boolean {
+    return this.stmts.sourceId.get(path) !== undefined
   }
 
   /** Remove every indexed file below a folder (folder deleted or renamed). */
@@ -170,6 +180,9 @@ export class Indexer {
     }
     if (buf.length === 0) return this.markError(existing.id, stat, hash, 'empty', name, 'empty')
 
+    // Mark the file as "being read": if parsing crashes the worker, the next start reports this
+    // file as damaged instead of trying it again forever.
+    this.stmts.markIndexing.run(existing.id)
     let sheets
     try {
       sheets = parseBuffer(buf, name)

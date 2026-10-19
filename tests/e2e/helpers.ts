@@ -47,7 +47,7 @@ export async function windowFor(app: ElectronApplication, view: string, timeout 
 
 type FFMain = {
   sources: { add: (p: string[]) => Promise<unknown> }
-  bar: { bounds: () => { x: number; y: number; width: number; height: number }; isDragging: () => boolean }
+  bar: { bounds: () => { x: number; y: number; width: number; height: number }; isDragging: () => boolean; dragCount: number }
   host: { progress: () => { running: boolean } }
 }
 
@@ -82,6 +82,10 @@ export async function waitIndexed(app: ElectronApplication): Promise<void> {
     await new Promise((r) => setTimeout(r, 250))
   }
   throw new Error('indexing did not finish')
+}
+
+export async function dragCount(app: ElectronApplication): Promise<number> {
+  return app.evaluate(() => (globalThis as unknown as { __ff: FFMain }).__ff.bar.dragCount)
 }
 
 export async function isDragging(app: ElectronApplication): Promise<boolean> {

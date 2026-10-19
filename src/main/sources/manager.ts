@@ -16,6 +16,11 @@ const WATCH_DEBOUNCE_MS = 800
 const isUnc = (p: string): boolean => p.startsWith('\\\\') || p.startsWith('//')
 
 /** True when `child` is `parent` or inside it. */
+/** Same path? Windows paths are case-insensitive. */
+export function samePath(a: string, b: string): boolean {
+  return process.platform === 'win32' ? resolve(a).toLowerCase() === resolve(b).toLowerCase() : resolve(a) === resolve(b)
+}
+
 export function isInside(child: string, parent: string): boolean {
   const c = resolve(child)
   const p = resolve(parent)
@@ -36,6 +41,9 @@ export class SourceManager extends EventEmitter {
   private pendingDirs = new Map<string, string>()
   private flushTimer: NodeJS.Timeout | null = null
   private onlineTimer: NodeJS.Timeout | null = null
+  private checking = false
+  /** add/remove run one after another so they never overwrite each other's settings. */
+  private chain: Promise<unknown> = Promise.resolve()
 
   constructor(private readonly host: IndexerHost) {
     super()
@@ -89,7 +97,13 @@ export class SourceManager extends EventEmitter {
     this.emitChanged()
   }
 
-  async add(paths: string[]): Promise<AddSourcesResult> {
+  add(paths: string[]): Promise<AddSourcesResult> {
+    const run = this.chain.then(() => this.addNow(paths))
+    this.chain = run.catch(() => undefined)
+    return run
+  }
+
+  private async addNow(paths: string[]): Promise<AddSourcesResult> {
     const result: AddSourcesResult = { added: [], alreadyCovered: [], rejected: [] }
     let entries = [...this.entries()]
     for (const raw of paths) {
@@ -107,7 +121,7 @@ export class SourceManager extends EventEmitter {
         result.rejected.push(path)
         continue
       }
-      if (entries.some((e) => e.path === path || (e.kind === 'folder' && isInside(path, e.path)))) {
+      if (entries.some((e) => samePath(e.path, path) || (e.kind === 'folder' && isInside(path, e.path)))) {
         result.alreadyCovered.push(path)
         continue
       }
@@ -129,7 +143,13 @@ export class SourceManager extends EventEmitter {
     return result
   }
 
-  remove(path: string): SourceInfo[] {
+  remove(path: string): Promise<SourceInfo[]> {
+    const run = this.chain.then(() => this.removeNow(path))
+    this.chain = run.catch(() => undefined)
+    return run
+  }
+
+  private removeNow(path: string): SourceInfo[] {
     const entries = this.entries().filter((e) => e.path !== path)
     settings.set({ sources: entries, scope: settings.get('scope').filter((s) => !isInside(s.path, path)) })
     this.info.delete(path)
@@ -148,6 +168,16 @@ export class SourceManager extends EventEmitter {
   }
 
   private async checkOnline(): Promise<void> {
+    if (this.checking) return // a dead network share can make stat() hang for a long time
+    this.checking = true
+    try {
+      await this.checkOnlineNow()
+    } finally {
+      this.checking = false
+    }
+  }
+
+  private async checkOnlineNow(): Promise<void> {
     for (const e of this.entries()) {
       const exists = await fs.stat(e.path).then(() => true, () => false)
       const was = this.info.get(e.path)?.status
@@ -284,6 +314,7 @@ export class SourceManager extends EventEmitter {
 
   async stop(): Promise<void> {
     if (this.onlineTimer) clearInterval(this.onlineTimer)
+    if (this.flushTimer) clearTimeout(this.flushTimer)
     await Promise.all([...this.watchers.values()].map((w) => w.close()))
     this.watchers.clear()
   }

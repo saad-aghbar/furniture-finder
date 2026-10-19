@@ -93,3 +93,15 @@ Deviations from, or interpretations of, the spec. Newest at the bottom of each s
   bundle; only better-sqlite3, electron-log, electron-updater and xlsx ship in `node_modules`.
   Windows builds keep only better-sqlite3's `win32-x64` prebuilt binary and en/he/ar Chromium locales.
 - macOS builds (`npm run dist:mac`, dev only) are unsigned (`identity: null`).
+
+## Hardening (code review)
+- **"Open in Excel" opens the workbook read-only** (unless it is already open in Excel). The files
+  often live in shared folders; a read-write open would lock them for colleagues. To edit, the user
+  uses Excel's "Enable editing / Save as" as usual.
+- A file that crashes the reader is marked damaged on the next start (status `indexing` survives a
+  crash), and the worker restarts with back-off (max 5 times) – no crash loop.
+- Queued indexing jobs are dropped when their file or source is removed.
+- Closing the bar (Alt+F4) hides it; the tray and hotkey always bring it back.
+- A new hotkey is registered before the old one is released; if it is taken, the old one stays.
+- Source add/remove calls are serialised; Windows paths compare case-insensitively.
+- A drag also ends when the pointer moves with no button pressed (release lost to another window).

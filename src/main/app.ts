@@ -131,19 +131,23 @@ export class FurnitureFinderApp {
     }
   }
 
+  /** Register the new shortcut first; keep the old one if the new one is taken or invalid. */
   private registerHotkey(accel: string): boolean {
-    if (this.hotkey) globalShortcut.unregister(this.hotkey)
-    this.hotkey = null
+    if (accel === this.hotkey) return true
+    let ok = false
     try {
-      if (globalShortcut.register(accel, () => this.showBar(true))) {
-        this.hotkey = accel
-        return true
-      }
+      ok = globalShortcut.register(accel, () => this.showBar(true))
     } catch (err) {
       log.warn('invalid hotkey', accel, err)
     }
-    log.warn('hotkey could not be registered', accel)
-    return false
+    if (!ok) {
+      log.warn('hotkey could not be registered', accel)
+      if (this.hotkey) setImmediate(() => settings.set({ hotkey: this.hotkey! }))
+      return false
+    }
+    if (this.hotkey) globalShortcut.unregister(this.hotkey)
+    this.hotkey = accel
+    return true
   }
 
   private onSettingsChanged(now: Settings, before: Settings): void {

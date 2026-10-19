@@ -47,6 +47,16 @@ function enqueue(job: Job): void {
   filesTotal++
 }
 
+function purge(match: (job: Job) => boolean): void {
+  for (let i = queue.length - 1; i >= 0; i--) {
+    if (match(queue[i]!)) {
+      queued.delete(queue[i]!.file.path)
+      queue.splice(i, 1)
+      filesTotal = Math.max(filesDone, filesTotal - 1)
+    }
+  }
+}
+
 async function pump(): Promise<void> {
   if (running) return
   running = true
@@ -54,6 +64,10 @@ async function pump(): Promise<void> {
     while (queue.length > 0) {
       const job = queue.shift()!
       queued.delete(job.file.path)
+      if (!indexer.hasSource(job.sourcePath)) {
+        filesDone++
+        continue // the source was removed while this file was waiting
+      }
       progress(job.file.path, true)
       const rowsBefore = rowsIndexed
       try {
@@ -91,10 +105,13 @@ async function pump(): Promise<void> {
 
 function handle(msg: ToWorker): void {
   switch (msg.type) {
-    case 'sources':
+    case 'sources': {
+      const keep = new Set(msg.sources.map((s) => s.path))
+      purge((j) => !keep.has(j.sourcePath))
       indexer.syncSources(msg.sources)
       send({ type: 'changed' })
       break
+    }
     case 'scan': {
       if (msg.complete) {
         indexer.reconcileSource(msg.sourcePath, msg.files)
@@ -106,11 +123,15 @@ function handle(msg: ToWorker): void {
       void pump()
       break
     }
-    case 'remove':
+    case 'remove': {
+      const gone = new Set(msg.paths)
+      purge((j) => gone.has(j.file.path))
       indexer.removeFiles(msg.paths)
       send({ type: 'changed' })
       break
+    }
     case 'removeUnder':
+      purge((j) => j.file.path.startsWith(msg.dir))
       indexer.removeUnder(msg.dir)
       send({ type: 'changed' })
       break
@@ -122,6 +143,8 @@ function handle(msg: ToWorker): void {
 try {
   const { db, rebuilt } = openWriteDb((workerData as { dbPath: string }).dbPath)
   indexer = new Indexer(db)
+  const crashed = indexer.recoverCrashed()
+  if (crashed) console.error(`${crashed} file(s) crashed the reader last time – marked as damaged`)
   port.on('message', (msg: ToWorker) => {
     try {
       handle(msg)

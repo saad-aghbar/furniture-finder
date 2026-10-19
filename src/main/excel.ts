@@ -15,7 +15,8 @@ catch { $xl = New-Object -ComObject Excel.Application }
 $xl.Visible = $true
 $wb = $null
 foreach ($w in $xl.Workbooks) { if ($w.FullName -eq $path) { $wb = $w } }
-if ($wb -eq $null) { $wb = $xl.Workbooks.Open($path) }
+# ReadOnly: never lock (or tempt saving over) a file other people may be using
+if ($wb -eq $null) { $wb = $xl.Workbooks.Open($path, 0, $true) }
 $ws = $wb.Worksheets.Item($sheet)
 $ws.Activate()
 $ws.Rows($row).Select() | Out-Null

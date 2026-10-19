@@ -313,6 +313,30 @@ export default function BarApp(): ReactNode {
       void window.ff.invoke('bar:drag-end', { cancel: false })
     }
   }
+  // If the button release never reaches us (focus change, window moved away from the pointer),
+  // end the drag as soon as we see the pointer move with no button pressed.
+  useEffect(() => {
+    const finish = (): void => {
+      const h = hold.current
+      if (h) clearTimeout(h.timer)
+      hold.current = null
+      if (!dragStart.current) return
+      dragStart.current = null
+      void window.ff.invoke('bar:drag-end', { cancel: false })
+    }
+    const onMove = (e: globalThis.PointerEvent): void => {
+      if (dragStart.current && e.buttons === 0) finish()
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', finish)
+    window.addEventListener('blur', finish)
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', finish)
+      window.removeEventListener('blur', finish)
+    }
+  }, [])
+
   const onBarPointerDown = (e: PointerEvent<HTMLDivElement>): void => {
     const target = e.target as HTMLElement
     const onEmpty = target === e.currentTarget || target.dataset['dragZone'] === 'true'

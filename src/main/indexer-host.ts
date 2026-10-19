@@ -52,11 +52,25 @@ export class IndexerHost extends EventEmitter {
     })
   }
 
+  private restarts = 0
+
+  /** Restart a crashed worker with back-off; give up after 5 tries (logged, app keeps searching). */
   private restart(): void {
     this.worker = null
     this.state = { ...this.state, running: false, currentFile: null }
     this.emit('progress', this.progress())
-    void this.start().then(() => this.emit('restarted'))
+    if (++this.restarts > 5) {
+      log.error('indexer worker keeps crashing – giving up until the app restarts')
+      return
+    }
+    setTimeout(() => {
+      this.start()
+        .then(() => this.emit('restarted'))
+        .catch((err) => {
+          log.error('indexer restart failed', err)
+          this.restart()
+        })
+    }, 2000 * this.restarts)
   }
 
   private post(msg: ToWorker): void {

@@ -2,7 +2,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { join } from 'node:path'
 import type {} from '../../src/preload/api'
-import { FIXTURES, SHOTS, addSources, barBounds, isDragging, launch, readClipboard, waitIndexed, windowFor, type Launched } from './helpers'
+import { FIXTURES, SHOTS, addSources, barBounds, dragCount, isDragging, launch, readClipboard, waitIndexed, windowFor, type Launched } from './helpers'
 
 let ctx: Launched
 test.describe.configure({ mode: 'serial' })
@@ -167,9 +167,11 @@ test('move bar: snap positions, move mode, position remembered', async () => {
 test('press and hold ⋯ picks the bar up instead of opening the menu', async () => {
   const more = bar.getByRole('button', { name: 'More options' })
   const box = (await more.boundingBox())!
+  const before = await dragCount(ctx.app)
   await bar.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
   await bar.mouse.down()
-  await expect.poll(() => isDragging(ctx.app)).toBe(true)
+  // holding starts a drag (on CI the real mouse is not pressed, so it may also end on its own)
+  await expect.poll(() => dragCount(ctx.app)).toBe(before + 1)
   await bar.mouse.up()
   await expect.poll(() => isDragging(ctx.app)).toBe(false)
   await expect(bar.getByRole('menu')).toBeHidden()

@@ -80,6 +80,11 @@ export class BarWindow {
     win.on('hide', () => {
       if (!this.userHidden) setTimeout(() => this.keepOnTop(), 300)
     })
+    // Alt+F4 on the bar hides it (tray / hotkey bring it back) instead of destroying it.
+    win.on('close', (e) => {
+      e.preventDefault()
+      this.hide()
+    })
     win.on('closed', () => {
       this.win = null
       this.stopTimers()
@@ -248,8 +253,12 @@ export class BarWindow {
     this.setMoveMode(false)
   }
 
+  /** Number of drags started (used by e2e tests). */
+  dragCount = 0
+
   startDrag(): void {
     if (this.drag || !this.win) return
+    this.dragCount++
     this.stopSettle()
     const c = screen.getCursorScreenPoint()
     const timer = setInterval(() => this.dragTick(), FRAME_MS)
@@ -382,6 +391,7 @@ export class BarWindow {
   }
 
   show(focus: boolean): void {
+    if (!this.win || this.win.isDestroyed()) this.create()
     const win = this.win
     if (!win || win.isDestroyed()) return
     const wasHidden = this.userHidden || !win.isVisible()
